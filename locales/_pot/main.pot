@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# This file is put in the public domain.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Dotclear 2 errorlogger module\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-10-22 19:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugins/errorlogger/_admin.php:14 plugins/errorlogger/_admin.php:25
+#: plugins/errorlogger/index.php:61
+msgid "Error Logger"
+msgstr ""
+
+#: plugins/errorlogger/class.errorlogger.php:94
+msgid "Error Logs acknowledged."
+msgstr ""
+
+#: plugins/errorlogger/class.errorlogger.php:120
+msgid "Some new error messages have been detected"
+msgstr ""
+
+#: plugins/errorlogger/class.errorlogger.php:121
+msgid "View error logs"
+msgstr ""
+
+#: plugins/errorlogger/class.errorlogger.php:122
+msgid "Acknowledge"
+msgstr ""
+
+#: plugins/errorlogger/class.errorlogger.php:123
+msgid "Don't bother me again"
+msgstr ""
+
+#: plugins/errorlogger/class.errorlogger.php:206
+msgid "%H:%M:%S"
+msgstr ""
+
+#: plugins/errorlogger/index.php:27
+msgid "Settings have been successfully updated"
+msgstr ""
+
+#: plugins/errorlogger/index.php:33
+msgid "Log files have been successfully cleared"
+msgstr ""
+
+#: plugins/errorlogger/index.php:50
+msgid "Are you sure you want to delete log files ?"
+msgstr ""
+
+#: plugins/errorlogger/index.php:54
+msgid "ErrorLogger"
+msgstr ""
+
+#: plugins/errorlogger/index.php:65 plugins/errorlogger/index.php:66
+msgid "Errors log"
+msgstr ""
+
+#: plugins/errorlogger/index.php:69
+msgid "No logs"
+msgstr ""
+
+#: plugins/errorlogger/index.php:77
+msgid "File"
+msgstr ""
+
+#: plugins/errorlogger/index.php:79
+msgid "Count"
+msgstr ""
+
+#: plugins/errorlogger/index.php:94
+msgid "Backtrace"
+msgstr ""
+
+#: plugins/errorlogger/index.php:105
+msgid "Clear log files"
+msgstr ""
+
+#: plugins/errorlogger/index.php:111 plugins/errorlogger/index.php:112
+msgid "Settings"
+msgstr ""
+
+#: plugins/errorlogger/index.php:115
+msgid "Enable error logging"
+msgstr ""
+
+#: plugins/errorlogger/index.php:117
+msgid "Enable backtrace logging"
+msgstr ""
+
+#: plugins/errorlogger/index.php:119
+msgid "Enable silent mode : standard errors will only be logged, no output"
+msgstr ""
+
+#: plugins/errorlogger/index.php:121
+msgid "If you do not want to be annoyed with warning messages, unselect the checkbox below"
+msgstr ""
+
+#: plugins/errorlogger/index.php:125
+msgid "Enable Annoying mode : warn user every time a new error has been detected"
+msgstr ""
+
+#: plugins/errorlogger/index.php:126
+msgid "Directory for logs (will be created in dotclear cache dir)"
+msgstr ""
+
+#: plugins/errorlogger/index.php:128
+msgid "Binary log file name"
+msgstr ""
+
+#: plugins/errorlogger/index.php:130
+msgid "Text log file name"
+msgstr ""

@@ -142,7 +142,14 @@ class ErrorLogger
     public function setSettings($settings)
     {
         foreach ($this->default_settings as $k => $v) {
-            $value = $settings[$k] ?? $v[1];
+            // PHP 5.6+
+            if (isset($settings[$k])) {
+                $value = $settings[$k];
+            } else {
+                $value = $v[1];
+            }
+            // PHP 7+
+            // $value = $settings[$k] ?? $v[1];
             if ($v[0] == 'string' && $value == '') {
                 $value = $v[1];
             }

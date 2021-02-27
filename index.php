@@ -21,7 +21,7 @@ if (isset($_POST['save'])) {
         'backtrace'   => isset($_POST['backtrace']) && $_POST['backtrace'] == 1,
         'silent_mode' => isset($_POST['silent_mode']) && $_POST['silent_mode'] == 1,
         'annoy_user'  => isset($_POST['annoy_user']) && $_POST['annoy_user'] == 1,
-        'bin_file'    => $_POST['bin_file'] ?? '',
+        'bin_file'    => isset($_POST['bin_file']) ? $_POST['bin_file'] : '',
         'txt_file'    => isset($_POST['bin_file']) ? $_POST['txt_file'] : '',
         'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
     ];

@@ -142,14 +142,7 @@ class ErrorLogger
     public function setSettings($settings)
     {
         foreach ($this->default_settings as $k => $v) {
-            // PHP 5.6+
-            if (isset($settings[$k])) {
-                $value = $settings[$k];
-            } else {
-                $value = $v[1];
-            }
-            // PHP 7+
-            // $value = $settings[$k] ?? $v[1];
+            $value = isset($settings[$k]) ? $settings[$k] : $v[1];
             if ($v[0] == 'string' && $value == '') {
                 $value = $v[1];
             }
@@ -205,7 +198,7 @@ class ErrorLogger
             return;
         }
         $errno = $msg['no'];
-        $errno = $this->errnos[$errno] ?? $errno;
+        $errno = isset($this->errnos[$errno]) ? $this->errnos[$errno] : $errno;
         $lents = count($msg['ts']);
         fprintf($fp, "%s [%7s] URL: %s\n", $msg['ts'], $errno, $msg['url']);
         fprintf($fp, "%s %s (file : %s, %s)\n", str_repeat(' ', $lents + 7 + 1), $msg['str'], $msg['file'], $msg['line']);
@@ -239,10 +232,10 @@ class ErrorLogger
             unset($debug[0]);
             foreach ($debug as $d) {
                 $dbg[] = sprintf('[%s:%s] : %s::%s',
-                    $d['file'] ?? 'N/A',
-                    $d['line'] ?? 'N/A',
-                    $d['class'] ?? '',
-                    $d['function'] ?? 'N/A'
+                    isset($d['file']) ? $d['file'] : 'N/A',
+                    isset($d['line']) ? $d['line'] : 'N/A',
+                    isset($d['class']) ? $d['class'] : '',
+                    isset($d['function']) ? $d['function'] : 'N/A'
                 );
             }
             $msg['backtrace'] = $dbg;

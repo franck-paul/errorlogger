@@ -13,7 +13,7 @@ class ErrorLogger
 {
     /** @var dcCore dcCore instance */
     protected $core;
-    protected $old_errorhandler;
+    protected $old_error_handler;
     public $errnos;
     protected $default_settings;
     protected $settings;
@@ -34,7 +34,6 @@ class ErrorLogger
             E_ERROR   => 'ERROR',
             E_WARNING => 'WARNING',
             E_NOTICE  => 'NOTICE'];
-        $this->loaded            = false;
         $this->already_annoyed   = false;
         $this->old_error_handler = set_error_handler([$this,'errorHandler']);
         $this->ts_format         = $core->blog->settings->system->date_formats[0] . ' %H:%M:%S';

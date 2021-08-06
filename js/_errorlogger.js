@@ -2,8 +2,8 @@
 'use strict';
 
 dotclear.viewLogContent = function (img, line) {
-  var logId = line.id.substr(1);
-  var tr = document.getElementById('pe' + logId);
+  const logId = line.id.substr(1);
+  const tr = document.getElementById('pe' + logId);
   if (tr.style.display == 'none') {
     $(tr).toggle();
     $(line).toggleClass('expand');
@@ -18,9 +18,9 @@ dotclear.viewLogContent = function (img, line) {
 };
 
 dotclear.logExpander = function (line) {
-  var td = line.firstChild;
+  const td = line.firstChild;
 
-  var img = document.createElement('img');
+  const img = document.createElement('img');
   img.src = dotclear.img_plus_src;
   img.alt = dotclear.img_plus_alt;
   img.className = 'expand';

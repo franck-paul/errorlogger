@@ -9,6 +9,10 @@
  *
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
+if (!defined('DC_RC_PATH')) {
+    return;
+}
+
 $this->registerModule(
     'ErrorLogger',                  // Name
     'Error logger for Dotclear2',   // Description
@@ -19,6 +23,9 @@ $this->registerModule(
         'permissions' => 'admin',                                      // Permissions
         'priority'    => 1,                                            // Priority
         'type'        => 'plugin',                                     // Type
-        'support'     => 'https://github.com/franck-paul/errorlogger', // Support URL
+
+        'details'    => 'https://open-time.net/?q=errorlogger',       // Details URL
+        'support'    => 'https://github.com/franck-paul/errorlogger', // Support URL
+        'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/main/dcstore.xml'
     ]
 );

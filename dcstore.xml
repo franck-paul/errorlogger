@@ -4,7 +4,7 @@
     <version>0.6.1</version>
     <author>Bruno Hondelatte</author>
     <desc>Error logger for Dotclear2</desc>
-    <file>https://github.com/franck-paul/errorlogger/releases/download/0.6.1/plugin-errorlogger.zip</file>
+    <file>https://github.com/franck-paul/errorlogger/releases/download/0.6.1/plugin-errorlogger-0.6.1.zip</file>
     <da:dcmin>2.19</da:dcmin>
     <da:details>https://open-time.net/?q=errorlogger</da:details>
     <da:support>https://github.com/franck-paul/errorlogger</da:support>

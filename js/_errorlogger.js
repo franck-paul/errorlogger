@@ -1,9 +1,9 @@
 /*global $, dotclear */
 'use strict';
 
-dotclear.viewLogContent = function (img, line) {
+dotclear.viewLogContent = (img, line) => {
   const logId = line.id.substr(1);
-  const tr = document.getElementById('pe' + logId);
+  const tr = document.getElementById(`pe${logId}`);
   if (tr.style.display == 'none') {
     $(tr).toggle();
     $(line).toggleClass('expand');
@@ -17,7 +17,7 @@ dotclear.viewLogContent = function (img, line) {
   }
 };
 
-dotclear.logExpander = function (line) {
+dotclear.logExpander = (line) => {
   const td = line.firstChild;
 
   const img = document.createElement('img');
@@ -33,7 +33,7 @@ dotclear.logExpander = function (line) {
   td.insertBefore(img, td.firstChild);
 };
 
-$(function () {
+$(() => {
   $('#logs-list tr.line').each(function () {
     let sib = $(this).next('tr:not(.line)');
     if (sib.length != 0) {
@@ -42,7 +42,5 @@ $(function () {
     }
   });
   // Confirm post deletion
-  $('input[name="clearfiles"]').click(function () {
-    return window.confirm(dotclear.msg.confirm_delete_logs);
-  });
+  $('input[name="clearfiles"]').click(() => window.confirm(dotclear.msg.confirm_delete_logs));
 });

@@ -17,7 +17,7 @@ $this->registerModule(
     'ErrorLogger',                  // Name
     'Error logger for Dotclear2',   // Description
     'Bruno Hondelatte',             // Author
-    '0.6.1',                        // Version
+    '0.6.2',                        // Version
     [
         'requires'    => [['core', '2.19']],
         'permissions' => 'admin',                                      // Permissions
@@ -26,6 +26,6 @@ $this->registerModule(
 
         'details'    => 'https://open-time.net/?q=errorlogger',       // Details URL
         'support'    => 'https://github.com/franck-paul/errorlogger', // Support URL
-        'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/master/dcstore.xml'
+        'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/master/dcstore.xml',
     ]
 );

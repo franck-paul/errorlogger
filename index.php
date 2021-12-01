@@ -21,7 +21,7 @@ if (isset($_POST['save'])) {
         'backtrace'   => isset($_POST['backtrace']) && $_POST['backtrace'] == 1,
         'silent_mode' => isset($_POST['silent_mode']) && $_POST['silent_mode'] == 1,
         'annoy_user'  => isset($_POST['annoy_user']) && $_POST['annoy_user'] == 1,
-        'bin_file'    => isset($_POST['bin_file']) ? $_POST['bin_file'] : '',
+        'bin_file'    => $_POST['bin_file'] ?? '',
         'txt_file'    => isset($_POST['bin_file']) ? $_POST['txt_file'] : '',
         'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
     ];
@@ -37,7 +37,7 @@ if (isset($_POST['save'])) {
     exit;
 }
 
-$page        = !empty($_GET['page']) ? max(1, (integer) $_GET['page']) : 1;
+$page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
 $nb_per_page = 30;
 $offset      = ($page - 1) * $nb_per_page;
 ?>
@@ -60,7 +60,7 @@ $offset      = ($page - 1) * $nb_per_page;
 
 echo dcPage::breadcrumb([
     html::escapeHTML($core->blog->name) => '',
-    __('Error Logger')                  => ''
+    __('Error Logger')                  => '',
 ]) . dcPage::notices();
 
 echo
@@ -86,7 +86,7 @@ if (!count($logs)) {
         $l = $logs[$k];
         echo '<tr class="line" id="p' . $k . '">' .
             '<td class="nowrap">' . html::escapeHTML($l['ts']) . '</td>' .
-            '<td>' . html::escapeHTML($core->errorlogger->errnos[$l['no']]) . '</td>' .
+            '<td>' . html::escapeHTML($core->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
             '<td>' . html::escapeHTML($l['file'] . ':' . $l['line']) . '</td>' .
             '<td>' . html::escapeHTML($l['str']) . '</td>' .
             '<td>' . html::escapeHTML($l['count']) . '</td>' .
@@ -118,8 +118,9 @@ echo '<div class="multi-part" title="' . __('Settings') . '" id="error-settings"
     __('Enable backtrace logging') . '</label></p>' .
     '<p><label for="silent_mode">' . form::checkbox('silent_mode', 1, $settings['silent_mode']) .
     __('Enable silent mode : standard errors will only be logged, no output') . '</label></p>' .
-    (isset($_GET['annoy'])?
-        ('<p class="info">' . __('If you do not want to be annoyed with warning messages, unselect the checkbox below') . '</p>'):
+    (
+        isset($_GET['annoy']) ?
+        ('<p class="info">' . __('If you do not want to be annoyed with warning messages, unselect the checkbox below') . '</p>') :
         ''
     ) .
     '<p><label for="annoy_user">' . form::checkbox('annoy_user', 1, $settings['annoy_user']) .

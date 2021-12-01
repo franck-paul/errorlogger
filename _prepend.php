@@ -17,5 +17,5 @@ if (!property_exists($GLOBALS['core'], 'errorlogger')) {
     // Let's define autoloader here, since we want to catch as many errors as possible
     $GLOBALS['__autoload']['ErrorLogger'] = dirname(__FILE__) . '/class.errorlogger.php';
     $GLOBALS['core']->errorlogger         = new ErrorLogger($GLOBALS['core']);
-    $GLOBALS['core']->errorlogger->setup($GLOBALS['core']);
+    $GLOBALS['core']->errorlogger->setup();
 }

@@ -23,9 +23,9 @@ class ErrorLogger
     protected $ts_format;
 
     /**
-    Inits ErrorLogger object
-
-    @param	core		<b>dcCore</b>		Dotclear core reference
+     * Constructs a new instance.
+     *
+     * @param      dcCore  $core   The core
      */
     public function __construct($core)
     {
@@ -33,7 +33,7 @@ class ErrorLogger
         $this->errnos = [
             E_ERROR   => 'ERROR',
             E_WARNING => 'WARNING',
-            E_NOTICE  => 'NOTICE'];
+            E_NOTICE  => 'NOTICE', ];
         $this->already_annoyed   = false;
         $this->old_error_handler = set_error_handler([$this,'errorHandler']);
         $this->ts_format         = $core->blog->settings->system->date_formats[0] . ' %H:%M:%S';
@@ -50,7 +50,7 @@ class ErrorLogger
             'bin_file'    => ['string','errors.bin','Binary log file name'],
             'txt_file'    => ['string','errors.txt','Text log file name'],
             'dir'         => ['string','errorlogger','directory used for logs (under cache dir)'],
-            'annoy_flag'  => ['boolean',false,'annoy flag']
+            'annoy_flag'  => ['boolean',false,'annoy flag'],
         ];
         $settings = [];
         foreach ($this->default_settings as $k => $v) {
@@ -128,7 +128,8 @@ class ErrorLogger
                 '<p><a class="button" href="plugin.php?p=errorlogger">' . __('View error logs') . '</a> ' .
                 '<a class="button" href="' . $ack_uri . '">' . __('Acknowledge') . '</a> ' .
                 '<a class="button" href="plugin.php?p=errorlogger&amp;annoy=1#error-settings">' . __("Don't bother me again") . '</a></p>',
-                ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]);
+                ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]
+            );
             $this->already_annoyed = true;
         }
     }
@@ -141,7 +142,7 @@ class ErrorLogger
     public function setSettings($settings)
     {
         foreach ($this->default_settings as $k => $v) {
-            $value = isset($settings[$k]) ? $settings[$k] : $v[1];
+            $value = $settings[$k] ?? $v[1];
             if ($v[0] == 'string' && $value == '') {
                 $value = $v[1];
             }
@@ -197,7 +198,7 @@ class ErrorLogger
             return;
         }
         $errno = $msg['no'];
-        $errno = isset($this->errnos[$errno]) ? $this->errnos[$errno] : $errno;
+        $errno = $this->errnos[$errno] ?? $errno;
         $lents = strlen($msg['ts']);
         fprintf($fp, "%s [%7s] URL: %s\n", $msg['ts'], $errno, $msg['url']);
         fprintf($fp, "%s %s (file : %s, %s)\n", str_repeat(' ', $lents + 7 + 1), $msg['str'], $msg['file'], $msg['line']);
@@ -222,7 +223,7 @@ class ErrorLogger
             'str'  => $errstr,
             'file' => $errfile,
             'line' => $errline,
-            'url'  => $_SERVER['REQUEST_URI']
+            'url'  => $_SERVER['REQUEST_URI'],
         ];
 
         if ($this->settings['backtrace']) {
@@ -230,11 +231,12 @@ class ErrorLogger
             $dbg   = [];
             unset($debug[0]);
             foreach ($debug as $d) {
-                $dbg[] = sprintf('[%s:%s] : %s::%s',
-                    isset($d['file']) ? $d['file'] : 'N/A',
-                    isset($d['line']) ? $d['line'] : 'N/A',
-                    isset($d['class']) ? $d['class'] : '',
-                    isset($d['function']) ? $d['function'] : 'N/A'
+                $dbg[] = sprintf(
+                    '[%s:%s] : %s::%s',
+                    $d['file'] ?? 'N/A',
+                    $d['line'] ?? 'N/A',
+                    $d['class'] ?? '',
+                    $d['function'] ?? 'N/A'
                 );
             }
             $msg['backtrace'] = $dbg;

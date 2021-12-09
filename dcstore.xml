@@ -1,8 +1,8 @@
 <modules xmlns:da="http://dotaddict.org/da/">
   <module id="errorlogger">
-    <name>Error logger for Dotclear2</name>
+    <name>ErrorLogger</name>
     <version>0.6.2</version>
-    <author>Error logger for Dotclear2</author>
+    <author>Bruno Hondelatte</author>
     <desc>Error logger for Dotclear2</desc>
     <file>https://github.com/franck-paul/errorlogger/releases/download/0.6.2/plugin-errorlogger-0.6.2.zip</file>
     <da:dcmin>2.19</da:dcmin>

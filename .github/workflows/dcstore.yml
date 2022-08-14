@@ -42,12 +42,12 @@ jobs:
           $dcmin = '2.0';
           if (file_exists('dcstore.xml')) {
             $df = file_get_contents('./_define.php');
-            if (preg_match('/registerModule\((.*?),(.*?),(.*?),(.*?)\'(.*?)\'(.*?)(,.*)\)/s',$df,$matches)) {
+            if (preg_match('/registerModule\((.*?),(.*?)[\'\"],(.*?)[\'\"],(.*?)[\'\"](.*?)[\'\"](.*?)(,.*)\)/s',$df,$matches)) {
               if (isset($matches[5])) {
                 $version = $matches[5];
                 if (isset($matches[7])) {
                   $str = $matches[7];
-                  if (preg_match('/\[(.*?)\'core\'(.*?),(.*?)\'(.*?)\'(.*?)\]/s',$str,$submatches)) {
+                  if (preg_match('/\[(.*?)[\'\"]core[\'\"](.*?),(.*?)[\'\"](.*?)[\'\"](.*?)\]/s',$str,$submatches)) {
                     $dcmin = $submatches[4];
                   }
                 }
@@ -89,8 +89,8 @@ jobs:
           if [[ "$test" != "" ]]; then
             echo "dcstore.xml modified, need to be commit"
             echo "set credentials"
-            git config --global user.email "carnet.franck.paul@gmail.com"
-            git config --global user.name "franck-paul"
+            git config user.email "carnet.franck.paul@gmail.com"
+            git config user.name "franck-paul"
             echo "git add dcstore.xml"
             git add dcstore.xml
             echo "git commit"
@@ -100,3 +100,20 @@ jobs:
           else
             echo "nothing to do"
           fi
+
+      # Notification via Telegram
+      - name: Send Telegram Message Ok
+        uses: appleboy/telegram-action@master
+        env:
+          GITHUB_CONTEXT: ${{toJSON(github)}}
+        with:
+          to: ${{ secrets.TELEGRAM_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: |
+            → Update *dcstore.xml* file if necessary
+            Version: *${{steps.getversion.outputs.module_version}}* (Dotclear ${{steps.getversion.outputs.module_dcmin}}+)
+            Branch: *${{ github.ref }}*
+            Repository: *${{github.repository}}*
+            Owner: *${{github.repository_owner}}*
+            🍺

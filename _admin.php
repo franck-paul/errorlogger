@@ -13,11 +13,15 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$_menu['System']->addItem(__('Error Logger'),'plugin.php?p=errorlogger','index.php?pf=errorlogger/icon.png',
-        preg_match('/plugin.php(.*)$/', $_SERVER['REQUEST_URI']) && !empty($_REQUEST['p']) && $_REQUEST['p'] == 'errorlogger',
-        $core->auth->isSuperAdmin());
+$_menu['System']->addItem(
+    __('Error Logger'),
+    dcCore::app()->adminurl->get('admin.plugin.errorlogger'),
+    dcPage::getPF('errorlogger/icon.svg'),
+    preg_match('/' . preg_quote(dcCore::app()->adminurl->get('admin.plugin.errorlogger')) . '(&.*)?$/', $_SERVER['REQUEST_URI']),
+    dcCore::app()->auth->isSuperAdmin()
+);
 
-$core->addBehavior('adminDashboardFavorites', ['errorloggerDashboard','dashboardFavs']);
+dcCore::app()->addBehavior('adminDashboardFavorites', ['errorloggerDashboard','dashboardFavs']);
 
 class errorloggerDashboard
 {
@@ -25,10 +29,10 @@ class errorloggerDashboard
     {
         $favs->register('errorlogger', [
             'title'       => __('Error Logger'),
-            'url'         => 'plugin.php?p=errorlogger',
-            'small-icon'  => 'index.php?pf=errorlogger/icon.png',
-            'large-icon'  => 'index.php?pf=errorlogger/icon-big.png',
-            'permissions' => 'admin'
+            'url'         => dcCore::app()->adminurl->get('admin.plugin.errorlogger'),
+            'small-icon'  => dcPage::getPF('errorlogger/icon.svg'),
+            'large-icon'  => dcPage::getPF('errorlogger/icon.svg'),
+            'permissions' => 'admin',
         ]);
     }
 }

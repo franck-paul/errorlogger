@@ -13,25 +13,25 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$settings = $core->errorlogger->getSettings();
+$settings = dcCore::app()->errorlogger->getSettings();
 
 if (isset($_POST['save'])) {
     $settings = [
-        'enabled'     => isset($_POST['enabled']) && $_POST['enabled'] == 1,
-        'backtrace'   => isset($_POST['backtrace']) && $_POST['backtrace'] == 1,
+        'enabled'     => isset($_POST['enabled'])     && $_POST['enabled']     == 1,
+        'backtrace'   => isset($_POST['backtrace'])   && $_POST['backtrace']   == 1,
         'silent_mode' => isset($_POST['silent_mode']) && $_POST['silent_mode'] == 1,
-        'annoy_user'  => isset($_POST['annoy_user']) && $_POST['annoy_user'] == 1,
+        'annoy_user'  => isset($_POST['annoy_user'])  && $_POST['annoy_user']  == 1,
         'bin_file'    => $_POST['bin_file'] ?? '',
         'txt_file'    => isset($_POST['bin_file']) ? $_POST['txt_file'] : '',
         'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
     ];
-    $core->errorlogger->setSettings($settings);
+    dcCore::app()->errorlogger->setSettings($settings);
     dcPage::addSuccessNotice(__('Settings have been successfully updated'));
     http::redirect($p_url . '#error-settings');
     exit;
 } elseif (isset($_POST['clearfiles'])) {
-    $core->errorlogger->clearLogs();
-    $core->errorlogger->acknowledge();
+    dcCore::app()->errorlogger->clearLogs();
+    dcCore::app()->errorlogger->acknowledge();
     dcPage::addSuccessNotice(__('Log files have been successfully cleared'));
     http::redirect($p_url . '#error-logs');
     exit;
@@ -52,21 +52,21 @@ $offset      = ($page - 1) * $nb_per_page;
             dcPage::jsVar('dotclear.msg.confirm_delete_logs', __('Are you sure you want to delete log files ?')) . "\n" .
             '//]]>' .
             '</script>';
-    ?>
+?>
 	<title><?php echo __('ErrorLogger'); ?></title>
 </head>
 <body>
 <?php
 
 echo dcPage::breadcrumb([
-    html::escapeHTML($core->blog->name) => '',
-    __('Error Logger')                  => '',
+    html::escapeHTML(dcCore::app()->blog->name) => '',
+    __('Error Logger')                          => '',
 ]) . dcPage::notices();
 
 echo
     '<div class="multi-part" title="' . __('Errors log') . '" id="error-logs">' .
     '<h3>' . __('Errors log') . '</h3>';
-$logs = array_reverse($core->errorlogger->getErrors());
+$logs = array_reverse(dcCore::app()->errorlogger->getErrors());
 if (!count($logs)) {
     echo '<p>' . __('No logs') . '</p>';
 } else {
@@ -86,7 +86,7 @@ if (!count($logs)) {
         $l = $logs[$k];
         echo '<tr class="line" id="p' . $k . '">' .
             '<td class="nowrap">' . html::escapeHTML($l['ts']) . '</td>' .
-            '<td>' . html::escapeHTML($core->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
+            '<td>' . html::escapeHTML(dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
             '<td>' . html::escapeHTML($l['file'] . ':' . $l['line']) . '</td>' .
             '<td>' . html::escapeHTML($l['str']) . '</td>' .
             '<td>' . html::escapeHTML($l['count']) . '</td>' .
@@ -104,7 +104,7 @@ if (!count($logs)) {
         $pager->getLinks() .
         '<form action="plugin.php" id="form-logs" method="post">' .
         '<p><input type="submit" class="delete" name="clearfiles" value="' . __('Clear log files') . '"/>' .
-        form::hidden(['p'], 'errorlogger') . $core->formNonce() . '</p></form>';
+        form::hidden(['p'], 'errorlogger') . dcCore::app()->formNonce() . '</p></form>';
 }
 echo
     '</div>';
@@ -132,7 +132,7 @@ echo '<div class="multi-part" title="' . __('Settings') . '" id="error-settings"
     '<p><label for="txt_file">' . __('Text log file name') . ' : </label>' .
     form::field('txt_file', 20, 255, html::escapeHTML($settings['txt_file'])) . '</p>' .
     '<p><input type="submit" value="' . __('Save') . ' (s)" ' . 'accesskey="s" name="save" /> ' .
-    form::hidden('p', 'errorlogger') . $core->formNonce() .
+    form::hidden('p', 'errorlogger') . dcCore::app()->formNonce() .
     '</p></form>' .
     '</div>';
 

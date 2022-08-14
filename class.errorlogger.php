@@ -12,7 +12,6 @@
 class ErrorLogger
 {
     /** @var dcCore dcCore instance */
-    protected $core;
     protected $old_error_handler;
     public $errnos;
     protected $default_settings;
@@ -27,21 +26,20 @@ class ErrorLogger
      *
      * @param      dcCore  $core   The core
      */
-    public function __construct($core)
+    public function __construct($core = null)
     {
-        $this->core   = $core;
         $this->errnos = [
             E_ERROR   => 'ERROR',
             E_WARNING => 'WARNING',
             E_NOTICE  => 'NOTICE', ];
         $this->already_annoyed   = false;
         $this->old_error_handler = set_error_handler([$this,'errorHandler']);
-        $this->ts_format         = $core->blog->settings->system->date_formats[0] . ' %H:%M:%S';
+        $this->ts_format         = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
     }
 
     public function initSettings()
     {
-        $ws                     = $this->core->blog->settings->addNamespace('errorlogger');
+        $ws                     = dcCore::app()->blog->settings->addNamespace('errorlogger');
         $this->default_settings = [
             'backtrace'   => ['boolean',false, 'Enable backtrace in logs'],
             'silent_mode' => ['boolean',false, 'Silent native errors, only show logs'],
@@ -86,7 +84,7 @@ class ErrorLogger
             }
             $_SESSION['notifications'] = $notifications;
         }
-        $this->core->blog->settings->errorlogger->put('annoy_flag', false);
+        dcCore::app()->blog->settings->errorlogger->put('annoy_flag', false);
     }
 
     public function setup()
@@ -94,7 +92,7 @@ class ErrorLogger
         global $_lang;
         $this->settings = $this->initSettings();
         if (isset($_GET['ack_errorlogger'])) {
-            $lfile = dirname(__FILE__) . '/locales/%s/main';
+            $lfile = __DIR__ . '/locales/%s/main';
             if (l10n::set(sprintf($lfile, $_lang)) === false && $_lang != 'en') {
                 l10n::set(sprintf($lfile, 'en'));
             }
@@ -102,7 +100,7 @@ class ErrorLogger
             $this->acknowledge();
             dcPage::addSuccessNotice(__('Error Logs acknowledged.'));
         } elseif (
-            $this->settings['annoy_user'] && $this->core->blog->settings->errorlogger->annoy_flag == true && !$this->already_annoyed) {
+            $this->settings['annoy_user'] && dcCore::app()->blog->settings->errorlogger->annoy_flag == true && !$this->already_annoyed) {
             if (isset($_SESSION['notifications'])) {
                 $notifications = $_SESSION['notifications'];
                 foreach ($notifications as $n) {
@@ -112,7 +110,7 @@ class ErrorLogger
                 }
             }
 
-            $lfile = dirname(__FILE__) . '/locales/%s/main';
+            $lfile = __DIR__ . '/locales/%s/main';
             if (l10n::set(sprintf($lfile, $_lang)) === false && $_lang != 'en') {
                 l10n::set(sprintf($lfile, 'en'));
             }
@@ -146,7 +144,7 @@ class ErrorLogger
             if ($v[0] == 'string' && $value == '') {
                 $value = $v[1];
             }
-            $this->core->blog->settings->errorlogger->put($k, $value);
+            dcCore::app()->blog->settings->errorlogger->put($k, $value);
         }
         $this->settings = $settings;
     }
@@ -186,7 +184,7 @@ class ErrorLogger
         }
         if (!$done) {
             $binmsg[] = $msg;
-            $this->core->blog->settings->errorlogger->put('annoy_flag', true, 'boolean');
+            dcCore::app()->blog->settings->errorlogger->put('annoy_flag', true, 'boolean');
         }
         file_put_contents($binfile, serialize($binmsg));
     }
@@ -212,14 +210,13 @@ class ErrorLogger
 
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
-        global $core;
         if (!$this->settings['enabled'] || (0 === error_reporting())) {
             return false;
         }
 
         $msg = [
             'no'   => $errno,
-            'ts'   => dt::str(__($this->ts_format), time(), $core->auth->getInfo('user_tz')),
+            'ts'   => dt::str(__($this->ts_format), time(), dcCore::app()->auth->getInfo('user_tz')),
             'str'  => $errstr,
             'file' => $errfile,
             'line' => $errline,
@@ -233,10 +230,10 @@ class ErrorLogger
             foreach ($debug as $d) {
                 $dbg[] = sprintf(
                     '[%s:%s] : %s::%s',
-                    $d['file'] ?? 'N/A',
-                    $d['line'] ?? 'N/A',
+                    $d['file']  ?? 'N/A',
+                    $d['line']  ?? 'N/A',
                     $d['class'] ?? '',
-                    $d['function'] ?? 'N/A'
+                    $d['function'] ?: 'N/A'
                 );
             }
             $msg['backtrace'] = $dbg;

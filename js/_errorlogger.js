@@ -9,12 +9,12 @@ dotclear.viewLogContent = (img, line) => {
     $(line).toggleClass('expand');
     img.src = dotclear.img_minus_src;
     img.alt = dotclear.img_minus_alt;
-  } else {
-    $(tr).toggle();
-    $(line).toggleClass('expand');
-    img.src = dotclear.img_plus_src;
-    img.alt = dotclear.img_plus_alt;
+    return;
   }
+  $(tr).toggle();
+  $(line).toggleClass('expand');
+  img.src = dotclear.img_plus_src;
+  img.alt = dotclear.img_plus_alt;
 };
 
 dotclear.logExpander = (line) => {
@@ -25,6 +25,7 @@ dotclear.logExpander = (line) => {
   img.alt = dotclear.img_plus_alt;
   img.className = 'expand';
   $(img).css('cursor', 'pointer');
+  $(img).css('width', '2em');
   img.line = line;
   img.onclick = function () {
     dotclear.viewLogContent(this, this.line);
@@ -35,7 +36,7 @@ dotclear.logExpander = (line) => {
 
 $(() => {
   $('#logs-list tr.line').each(function () {
-    let sib = $(this).next('tr:not(.line)');
+    const sib = $(this).next('tr:not(.line)');
     if (sib.length != 0) {
       sib.toggle();
       dotclear.logExpander(this);

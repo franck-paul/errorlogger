@@ -11,8 +11,6 @@
  */
 class ErrorLogger
 {
-    /** @var dcCore dcCore instance */
-    protected $old_error_handler;
     public $errnos;
     protected $default_settings;
     protected $settings;
@@ -32,9 +30,10 @@ class ErrorLogger
             E_ERROR   => 'ERROR',
             E_WARNING => 'WARNING',
             E_NOTICE  => 'NOTICE', ];
-        $this->already_annoyed   = false;
-        $this->old_error_handler = set_error_handler([$this,'errorHandler']);
-        $this->ts_format         = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
+        $this->already_annoyed = false;
+        $this->ts_format       = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
+
+        set_error_handler([$this,'errorHandler']);
     }
 
     public function initSettings()

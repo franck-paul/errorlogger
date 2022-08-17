@@ -19,7 +19,7 @@ $this->registerModule(
     'Bruno Hondelatte',             // Author
     '0.7',
     [
-        'requires'    => [['core', '2.23']],
+        'requires'    => [['core', '2.24']],
         'permissions' => 'admin',                                      // Permissions
         'priority'    => 1,                                            // Priority
         'type'        => 'plugin',                                     // Type

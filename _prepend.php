@@ -13,7 +13,7 @@ if (!defined('DC_RC_PATH')) {
     return;
 }
 
-if (!property_exists(dcCore::app(), 'errorlogger')) {
+if (!isset(dcCore::app()->errorlogger)) {
     // Let's define autoloader here, since we want to catch as many errors as possible
     $GLOBALS['__autoload']['ErrorLogger'] = __DIR__ . '/class.errorlogger.php';
     dcCore::app()->errorlogger            = new ErrorLogger(dcCore::app());

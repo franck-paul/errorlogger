@@ -21,6 +21,11 @@ class ErrorLogger
     protected $txt_file;
     protected $ts_format;
 
+    private $ignored_str = [
+        // Ignored until PHP 9 full support
+        'Function strftime() is deprecated',
+    ];
+
     /**
      * Constructs a new instance.
      *
@@ -211,6 +216,10 @@ class ErrorLogger
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         if (!$this->settings['enabled'] || (0 === error_reporting())) {
+            return false;
+        }
+
+        if (in_array($errstr, $this->ignored_str)) {
             return false;
         }
 

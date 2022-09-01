@@ -17,7 +17,7 @@ $this->registerModule(
     'ErrorLogger',                  // Name
     'Error logger for Dotclear2',   // Description
     'Bruno Hondelatte',             // Author
-    '0.7',
+    '0.7.1',
     [
         'requires'    => [['core', '2.23']],
         'permissions' => 'admin',                                      // Permissions

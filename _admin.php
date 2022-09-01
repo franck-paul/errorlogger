@@ -13,7 +13,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-$_menu['System']->addItem(
+dcCore::app()->menu['System']->addItem(
     __('Error Logger'),
     dcCore::app()->adminurl->get('admin.plugin.errorlogger'),
     dcPage::getPF('errorlogger/icon.svg'),

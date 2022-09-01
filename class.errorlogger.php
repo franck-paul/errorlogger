@@ -19,12 +19,15 @@ class ErrorLogger
     protected $txt_file;
     protected $ts_format;
 
+    private $ignored_str = [
+        // Ignored until PHP 9 full support
+        'Function strftime() is deprecated',
+    ];
+
     /**
      * Constructs a new instance.
-     *
-     * @param      dcCore  $core   The core
      */
-    public function __construct($core = null)
+    public function __construct()
     {
         $this->errnos = [
             E_ERROR   => 'ERROR',
@@ -88,18 +91,17 @@ class ErrorLogger
 
     public function setup()
     {
-        global $_lang;
         $this->settings = $this->initSettings();
         if (isset($_GET['ack_errorlogger'])) {
             $lfile = __DIR__ . '/locales/%s/main';
-            if (l10n::set(sprintf($lfile, $_lang)) === false && $_lang != 'en') {
+            if (l10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
                 l10n::set(sprintf($lfile, 'en'));
             }
 
             $this->acknowledge();
             dcPage::addSuccessNotice(__('Error Logs acknowledged.'));
         } elseif (
-            $this->settings['annoy_user'] && dcCore::app()->blog->settings->errorlogger->annoy_flag == true && !$this->already_annoyed) {
+            $this->settings['annoy_user'] && dcCore::app()->blog->settings->errorlogger->annoy_flag && !$this->already_annoyed) {
             if (isset($_SESSION['notifications'])) {
                 $notifications = $_SESSION['notifications'];
                 foreach ($notifications as $n) {
@@ -110,7 +112,7 @@ class ErrorLogger
             }
 
             $lfile = __DIR__ . '/locales/%s/main';
-            if (l10n::set(sprintf($lfile, $_lang)) === false && $_lang != 'en') {
+            if (l10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
                 l10n::set(sprintf($lfile, 'en'));
             }
             $uri    = explode('?', $_SERVER['REQUEST_URI']);
@@ -210,6 +212,10 @@ class ErrorLogger
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         if (!$this->settings['enabled'] || (0 === error_reporting())) {
+            return false;
+        }
+
+        if (in_array($errstr, $this->ignored_str)) {
             return false;
         }
 

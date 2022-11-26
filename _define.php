@@ -14,18 +14,20 @@ if (!defined('DC_RC_PATH')) {
 }
 
 $this->registerModule(
-    'ErrorLogger',                  // Name
-    'Error logger for Dotclear2',   // Description
-    'Bruno Hondelatte',             // Author
-    '0.7.1',
+    'ErrorLogger',
+    'Error logger for Dotclear2',
+    'Bruno Hondelatte',
+    '0.8',
     [
         'requires'    => [['core', '2.24']],
-        'permissions' => 'admin',                                      // Permissions
-        'priority'    => 1,                                            // Priority
-        'type'        => 'plugin',                                     // Type
+        'permissions' => dcCore::app()->auth->makePermissions([
+            dcAuth::PERMISSION_ADMIN,
+        ]),
+        'priority' => 1,
+        'type'     => 'plugin',
 
-        'details'    => 'https://open-time.net/?q=errorlogger',       // Details URL
-        'support'    => 'https://github.com/franck-paul/errorlogger', // Support URL
+        'details'    => 'https://open-time.net/?q=errorlogger',
+        'support'    => 'https://github.com/franck-paul/errorlogger',
         'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/master/dcstore.xml',
     ]
 );

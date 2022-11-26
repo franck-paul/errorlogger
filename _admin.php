@@ -13,7 +13,7 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
 
-dcCore::app()->menu['System']->addItem(
+dcCore::app()->menu[dcAdmin::MENU_SYSTEM]->addItem(
     __('Error Logger'),
     dcCore::app()->adminurl->get('admin.plugin.errorlogger'),
     dcPage::getPF('errorlogger/icon.svg'),
@@ -21,18 +21,20 @@ dcCore::app()->menu['System']->addItem(
     dcCore::app()->auth->isSuperAdmin()
 );
 
-dcCore::app()->addBehavior('adminDashboardFavorites', ['errorloggerDashboard','dashboardFavs']);
+dcCore::app()->addBehavior('adminDashboardFavoritesV2', ['errorloggerDashboard','dashboardFavs']);
 
 class errorloggerDashboard
 {
-    public static function dashboardFavs($core, $favs)
+    public static function dashboardFavs($favs)
     {
         $favs->register('errorlogger', [
             'title'       => __('Error Logger'),
             'url'         => dcCore::app()->adminurl->get('admin.plugin.errorlogger'),
             'small-icon'  => dcPage::getPF('errorlogger/icon.svg'),
             'large-icon'  => dcPage::getPF('errorlogger/icon.svg'),
-            'permissions' => 'admin',
+            'permissions' => dcCore::app()->auth->makePermissions([
+                dcAuth::PERMISSION_ADMIN,
+            ]),
         ]);
     }
 }

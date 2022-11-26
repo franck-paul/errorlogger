@@ -27,13 +27,13 @@ if (isset($_POST['save'])) {
     ];
     dcCore::app()->errorlogger->setSettings($settings);
     dcPage::addSuccessNotice(__('Settings have been successfully updated'));
-    http::redirect($p_url . '#error-settings');
+    http::redirect(dcCore::app()->admin->getPageURL() . '#error-settings');
     exit;
 } elseif (isset($_POST['clearfiles'])) {
     dcCore::app()->errorlogger->clearLogs();
     dcCore::app()->errorlogger->acknowledge();
     dcPage::addSuccessNotice(__('Log files have been successfully cleared'));
-    http::redirect($p_url . '#error-logs');
+    http::redirect(dcCore::app()->admin->getPageURL() . '#error-logs');
     exit;
 }
 

@@ -15,7 +15,7 @@ if (!defined('DC_RC_PATH')) {
 
 if (!isset(dcCore::app()->errorlogger)) {
     // Let's define autoloader here, since we want to catch as many errors as possible
-    $__autoload['ErrorLogger'] = __DIR__ . '/class.errorlogger.php';
+    Clearbricks::lib()->autoload(['ErrorLogger' => __DIR__ . '/class.errorlogger.php']);
     dcCore::app()->errorlogger = new ErrorLogger();
     dcCore::app()->errorlogger->setup();
 }

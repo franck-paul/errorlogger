@@ -41,7 +41,8 @@ class ErrorLogger
 
     public function initSettings()
     {
-        $ws                     = dcCore::app()->blog->settings->addNamespace('errorlogger');
+        $ws = dcCore::app()->blog->settings->errorlogger;
+
         $this->default_settings = [
             'backtrace'   => ['boolean',false, 'Enable backtrace in logs'],
             'silent_mode' => ['boolean',false, 'Silent native errors, only show logs'],

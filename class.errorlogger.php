@@ -19,7 +19,7 @@ class ErrorLogger
     protected $txt_file;
     protected $ts_format;
 
-    private $ignored_str = [
+    private array $ignored_str = [
         // Ignored until PHP 9 full support
         'Function strftime() is deprecated',
     ];
@@ -34,15 +34,17 @@ class ErrorLogger
             E_WARNING => 'WARNING',
             E_NOTICE  => 'NOTICE', ];
         $this->already_annoyed = false;
-        $this->ts_format       = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
+        if (dcCore::app()->blog) {
+            $this->ts_format = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
+        } else {
+            $this->ts_format = '%Y-%m-%d %H:%M:%S';
+        }
 
         set_error_handler([$this,'errorHandler']);
     }
 
     public function initSettings()
     {
-        $ws = dcCore::app()->blog->settings->errorlogger;
-
         $this->default_settings = [
             'backtrace'   => ['boolean',false, 'Enable backtrace in logs'],
             'silent_mode' => ['boolean',false, 'Silent native errors, only show logs'],
@@ -54,13 +56,20 @@ class ErrorLogger
             'annoy_flag'  => ['boolean',false,'annoy flag'],
         ];
         $settings = [];
-        foreach ($this->default_settings as $k => $v) {
-            $value = $ws->$k;
-            if ($value === null) {
+        if (dcCore::app()->blog) {
+            $ws = dcCore::app()->blog->settings->errorlogger;
+            foreach ($this->default_settings as $k => $v) {
+                $value = $ws->$k;
+                if ($value === null) {
+                    $settings[$k] = $v[1];
+                    $ws->put($k, $v[1], $v[0], $v[2]);
+                } else {
+                    $settings[$k] = $value;
+                }
+            }
+        } else {
+            foreach ($this->default_settings as $k => $v) {
                 $settings[$k] = $v[1];
-                $ws->put($k, $v[1], $v[0], $v[2]);
-            } else {
-                $settings[$k] = $value;
             }
         }
 

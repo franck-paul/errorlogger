@@ -35,6 +35,8 @@ dotclear.logExpander = (line) => {
 };
 
 $(() => {
+  Object.assign(dotclear.msg, dotclear.getData('errorlogger'));
+
   $('#logs-list tr.line').each(function () {
     const sib = $(this).next('tr:not(.line)');
     if (sib.length != 0) {
@@ -42,6 +44,7 @@ $(() => {
       dotclear.logExpander(this);
     }
   });
+
   // Confirm post deletion
   $('input[name="clearfiles"]').click(() => window.confirm(dotclear.msg.confirm_delete_logs));
 });

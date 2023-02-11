@@ -12,13 +12,42 @@
 class ErrorLogger
 {
     public $errnos;
+
+    /**
+     * @var array
+     */
     protected $default_settings;
+
+    /**
+     * @var array
+     */
     protected $settings;
+
+    /**
+     * @var bool
+     */
     protected $already_annoyed;
+
+    /**
+     * @var string|null
+     */
     protected $bin_file;
+
+    /**
+     * @var string|null
+     */
     protected $txt_file;
+
+    /**
+     * @var string|null
+     */
     protected $ts_format;
 
+    /**
+     * List of ignored errors
+     *
+     * @var array<string>
+     */
     private array $ignored_str = [
         // Ignored until PHP 9 full support
         'Function strftime() is deprecated',
@@ -33,7 +62,9 @@ class ErrorLogger
             E_ERROR   => 'ERROR',
             E_WARNING => 'WARNING',
             E_NOTICE  => 'NOTICE', ];
+
         $this->already_annoyed = false;
+
         if (dcCore::app()->blog) {
             $this->ts_format = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
         } else {
@@ -43,18 +74,24 @@ class ErrorLogger
         set_error_handler([$this,'errorHandler']);
     }
 
-    public function initSettings()
+    /**
+     * Initializes the settings.
+     *
+     * @return     array
+     */
+    public function initSettings(): array
     {
         $this->default_settings = [
-            'backtrace'   => ['boolean',false, 'Enable backtrace in logs'],
-            'silent_mode' => ['boolean',false, 'Silent native errors, only show logs'],
-            'enabled'     => ['boolean',false,'Enable error logger'],
-            'annoy_user'  => ['boolean',true,''],
-            'bin_file'    => ['string','errors.bin','Binary log file name'],
-            'txt_file'    => ['string','errors.txt','Text log file name'],
-            'dir'         => ['string','errorlogger','directory used for logs (under cache dir)'],
-            'annoy_flag'  => ['boolean',false,'annoy flag'],
+            'backtrace'   => ['boolean', false, 'Enable backtrace in logs'],
+            'silent_mode' => ['boolean', false, 'Silent native errors, only show logs'],
+            'enabled'     => ['boolean', false, 'Enable error logger'],
+            'annoy_user'  => ['boolean', true, ''],
+            'bin_file'    => ['string', 'errors.bin', 'Binary log file name'],
+            'txt_file'    => ['string', 'errors.txt', 'Text log file name'],
+            'dir'         => ['string', 'errorlogger', 'directory used for logs (under cache dir)'],
+            'annoy_flag'  => ['boolean', false, 'annoy flag'],
         ];
+
         $settings = [];
         if (dcCore::app()->blog) {
             $ws = dcCore::app()->blog->settings->errorlogger;
@@ -76,7 +113,14 @@ class ErrorLogger
         return $settings;
     }
 
-    protected function getFilename($setting)
+    /**
+     * Gets the filename.
+     *
+     * @param      string   $setting  The setting (should be bin_file or txt_file)
+     *
+     * @return     string  The filename.
+     */
+    protected function getFilename(string $setting): string
     {
         if (!is_dir(DC_TPL_CACHE . '/' . $this->settings['dir'])) {
             mkdir(DC_TPL_CACHE . '/' . $this->settings['dir']);
@@ -85,7 +129,10 @@ class ErrorLogger
         return DC_TPL_CACHE . '/' . $this->settings['dir'] . '/' . $this->settings[$setting];
     }
 
-    public function acknowledge()
+    /**
+     * Cope with acknowledge
+     */
+    public function acknowledge(): void
     {
         if (isset($_SESSION['notifications'])) {
             $notifications = $_SESSION['notifications'];
@@ -99,7 +146,10 @@ class ErrorLogger
         dcCore::app()->blog->settings->errorlogger->put('annoy_flag', false);
     }
 
-    public function setup()
+    /**
+     * Setup
+     */
+    public function setup(): void
     {
         $this->settings = $this->initSettings();
         if (isset($_GET['ack_errorlogger'])) {
@@ -143,12 +193,22 @@ class ErrorLogger
         }
     }
 
-    public function getSettings()
+    /**
+     * Gets the settings.
+     *
+     * @return     array  The settings.
+     */
+    public function getSettings(): array
     {
         return $this->settings;
     }
 
-    public function setSettings($settings)
+    /**
+     * Sets the settings.
+     *
+     * @param      array  $settings  The settings
+     */
+    public function setSettings(array $settings): void
     {
         foreach ($this->default_settings as $k => $v) {
             $value = $settings[$k] ?? $v[1];
@@ -160,7 +220,12 @@ class ErrorLogger
         $this->settings = $settings;
     }
 
-    public function getErrors()
+    /**
+     * Gets the errors from binary file.
+     *
+     * @return     array  The errors.
+     */
+    public function getErrors(): array
     {
         $binfile = $this->getFileName('bin_file');
         if (file_exists($binfile)) {
@@ -176,7 +241,12 @@ class ErrorLogger
         return $binmsg;
     }
 
-    public function addBinaryMessage($msg)
+    /**
+     * Adds a message in the binary file.
+     *
+     * @param      array  $msg    The message
+     */
+    public function addBinaryMessage(array $msg): void
     {
         $binfile = $this->getFileName('bin_file');
         $binmsg  = $this->getErrors();
@@ -200,7 +270,12 @@ class ErrorLogger
         file_put_contents($binfile, serialize($binmsg));
     }
 
-    public function addErrorMessage($msg)
+    /**
+     * Adds a message in the text file.
+     *
+     * @param      array  $msg    The message
+     */
+    public function addErrorMessage(array $msg): void
     {
         $out = $this->getFileName('txt_file');
         if (!($fp = fopen($out, 'a'))) {
@@ -213,13 +288,28 @@ class ErrorLogger
         fprintf($fp, "%s %s (file : %s, %s)\n", str_repeat(' ', $lents + 7 + 1), $msg['str'], $msg['file'], $msg['line']);
     }
 
-    protected function log($msg)
+    /**
+     * Add a message
+     *
+     * @param      array  $msg    The message
+     */
+    protected function log(array $msg): void
     {
         $this->addErrorMessage($msg);
         $this->addBinaryMessage($msg);
     }
 
-    public function errorHandler($errno, $errstr, $errfile, $errline)
+    /**
+     * Error handler
+     *
+     * @param      int     $errno    The error number
+     * @param      string  $errstr   The error message
+     * @param      string  $errfile  The file where the error occured
+     * @param      int     $errline  The line where the error occured in file
+     *
+     * @return     bool
+     */
+    public function errorHandler(int $errno, string $errstr, string $errfile = '', int $errline = 0): bool
     {
         if (!$this->settings['enabled'] || (0 === error_reporting())) {
             return false;
@@ -258,7 +348,10 @@ class ErrorLogger
         return ($this->settings['silent_mode']);
     }
 
-    public function clearLogs()
+    /**
+     * Clear the files (binary and text)
+     */
+    public function clearLogs(): void
     {
         @unlink($this->getFileName('bin_file'));
         @unlink($this->getFileName('txt_file'));

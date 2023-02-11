@@ -15,15 +15,16 @@ $this->registerModule(
     'Bruno Hondelatte',
     '1.0',
     [
+        'type'        => 'plugin',
         'requires'    => [['core', '2.24']],
         'permissions' => dcCore::app()->auth->makePermissions([
             dcAuth::PERMISSION_ADMIN,
         ]),
-        'priority'    => 1,
-        'type'        => 'plugin',
 
-        'details'     => 'https://open-time.net/?q=errorlogger',
-        'support'     => 'https://github.com/franck-paul/errorlogger',
-        'repository'  => 'https://raw.githubusercontent.com/franck-paul/errorlogger/master/dcstore.xml',
+        'priority' => 1,
+
+        'details'    => 'https://open-time.net/?q=errorlogger',
+        'support'    => 'https://github.com/franck-paul/errorlogger',
+        'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/master/dcstore.xml',
     ]
 );

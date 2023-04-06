@@ -9,6 +9,10 @@
  *
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Dotclear\Helper\Html\Html;
+use Dotclear\Helper\Network\Http;
+
 if (!defined('DC_CONTEXT_ADMIN')) {
     return;
 }
@@ -27,13 +31,13 @@ if (isset($_POST['save'])) {
     ];
     dcCore::app()->errorlogger->setSettings($settings);
     dcPage::addSuccessNotice(__('Settings have been successfully updated'));
-    http::redirect(dcCore::app()->admin->getPageURL() . '#error-settings');
+    Http::redirect(dcCore::app()->admin->getPageURL() . '#error-settings');
     exit;
 } elseif (isset($_POST['clearfiles'])) {
     dcCore::app()->errorlogger->clearLogs();
     dcCore::app()->errorlogger->acknowledge();
     dcPage::addSuccessNotice(__('Log files have been successfully cleared'));
-    http::redirect(dcCore::app()->admin->getPageURL() . '#error-logs');
+    Http::redirect(dcCore::app()->admin->getPageURL() . '#error-logs');
     exit;
 }
 
@@ -52,7 +56,7 @@ echo
 '<body>';
 
 echo dcPage::breadcrumb([
-    html::escapeHTML(dcCore::app()->blog->name) => '',
+    Html::escapeHTML(dcCore::app()->blog->name) => '',
     __('Error Logger')                          => '',
 ]);
 echo dcPage::notices();
@@ -83,12 +87,12 @@ if (!count($logs)) {
         $l = $logs[$k];
         echo
         '<tr class="line" id="p' . $k . '">' .
-        '<td class="nowrap">' . html::escapeHTML($l['ts']) . '</td>' .
-        '<td>' . html::escapeHTML(dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
-        '<td>' . html::escapeHTML($l['file'] . ':' . $l['line']) . '</td>' .
-        '<td>' . html::escapeHTML($l['str']) . '</td>' .
-        '<td>' . html::escapeHTML($l['count']) . '</td>' .
-        '<td>' . html::escapeHTML($l['url']) . '</td>' .
+        '<td class="nowrap">' . Html::escapeHTML($l['ts']) . '</td>' .
+        '<td>' . Html::escapeHTML(dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
+        '<td>' . Html::escapeHTML($l['file'] . ':' . $l['line']) . '</td>' .
+        '<td>' . Html::escapeHTML($l['str']) . '</td>' .
+        '<td>' . Html::escapeHTML($l['count']) . '</td>' .
+        '<td>' . Html::escapeHTML($l['url']) . '</td>' .
         '</tr>'	;
         if (isset($l['backtrace'])) {
             echo
@@ -129,11 +133,11 @@ __('Enable silent mode : standard errors will only be logged, no output') . '</l
 '<p><label for="annoy_user">' . form::checkbox('annoy_user', 1, $settings['annoy_user']) .
 __('Enable Annoying mode : warn user every time a new error has been detected') . '</label></p>' .
 '<p><label for="dir">' . __('Directory for logs (will be created in dotclear cache dir)') . ' : </label>' .
-form::field('dir', 20, 255, html::escapeHTML($settings['dir'])) . '</p>' .
+form::field('dir', 20, 255, Html::escapeHTML($settings['dir'])) . '</p>' .
 '<p><label for="bin_file">' . __('Binary log file name') . ' : </label>' .
-form::field('bin_file', 20, 255, html::escapeHTML($settings['bin_file'])) . '</p>' .
+form::field('bin_file', 20, 255, Html::escapeHTML($settings['bin_file'])) . '</p>' .
 '<p><label for="txt_file">' . __('Text log file name') . ' : </label>' .
-form::field('txt_file', 20, 255, html::escapeHTML($settings['txt_file'])) . '</p>' .
+form::field('txt_file', 20, 255, Html::escapeHTML($settings['txt_file'])) . '</p>' .
 '<p><input type="submit" value="' . __('Save') . ' (s)" ' . 'accesskey="s" name="save" /> ' .
 form::hidden('p', 'errorlogger') . dcCore::app()->formNonce() .
 '</p></form>' .

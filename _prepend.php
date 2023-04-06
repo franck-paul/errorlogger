@@ -9,6 +9,9 @@
  *
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Dotclear\Helper\Clearbricks;
+
 if (!isset(dcCore::app()->errorlogger)) {
     // Let's define autoloader here, since we want to catch as many errors as possible
     Clearbricks::lib()->autoload(['ErrorLogger' => __DIR__ . '/class.errorlogger.php']);

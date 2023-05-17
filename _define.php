@@ -13,7 +13,7 @@ $this->registerModule(
     'ErrorLogger',
     'Error logger for Dotclear2',
     'Bruno Hondelatte',
-    '1.0',
+    '2.0',
     [
         'type'        => 'plugin',
         'requires'    => [['core', '2.26']],

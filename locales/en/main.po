@@ -17,40 +17,40 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Error Logger"
-msgstr "Gestionnaire d'erreurs"
+msgstr ""
 
 msgid "Error Logs acknowledged."
-msgstr "Erreurs acquittées"
+msgstr ""
 
 msgid "Some new error messages have been detected"
-msgstr "De nouvelles erreurs ont été détectées"
+msgstr ""
 
 msgid "View error logs"
-msgstr "Voir le log des erreurs"
+msgstr ""
 
 msgid "Acknowledge"
-msgstr "Acquitter"
+msgstr ""
 
 msgid "Don't bother me again"
-msgstr "Ne plus m'embêter"
+msgstr ""
 
 msgid "Settings have been successfully updated"
-msgstr "Les préférences ont été enregistrées"
+msgstr ""
 
 msgid "Log files have been successfully cleared"
-msgstr "Les fichiers de log ont été nettoyés"
+msgstr ""
 
 msgid "Are you sure you want to delete log files ?"
-msgstr "Voulez-vous vraiment supprimer les fichiers de log ?"
+msgstr ""
 
 msgid "ErrorLogger"
 msgstr ""
 
 msgid "Errors log"
-msgstr "Logs d'erreurs"
+msgstr ""
 
 msgid "No logs"
-msgstr "Pas de logs"
+msgstr ""
 
 msgid "Date"
 msgstr ""
@@ -59,46 +59,43 @@ msgid "Type"
 msgstr ""
 
 msgid "File"
-msgstr "Fichier"
+msgstr ""
 
 msgid "Count"
-msgstr "Compteur"
+msgstr ""
 
 msgid "URL"
 msgstr ""
 
 msgid "Backtrace"
-msgstr "Trace d'exécution"
+msgstr ""
 
 msgid "Clear log files"
-msgstr "Effacer les fichiers de log"
+msgstr ""
 
 msgid "Enable error logging"
-msgstr "Activer les logs d'erreur"
+msgstr ""
 
 msgid "Enable backtrace logging"
-msgstr "Activer le log des traces d'exécution"
+msgstr ""
 
 msgid "Enable silent mode : standard errors will only be logged, no output"
-msgstr "Activer le mode silencieux : les erreurs seront logguées mais pas affichées"
+msgstr ""
 
 msgid "If you do not want to be annoyed with warning messages, unselect the checkbox below"
-msgstr "Si vous ne voulez plus être embêtés par les messages d'avertissement, décocher la case ci-dessous"
+msgstr ""
 
 msgid "Enable Annoying mode : warn user every time a new error has been detected"
-msgstr "Activer le mode perturbateur : afficher un avertissement à chaque fois qu'une erreur a été détectée"
+msgstr ""
 
 msgid "Directory for logs (will be created in dotclear cache dir)"
-msgstr "Répertoire pour stocker les logs (créé dans le répertoire de cache de dotclear)"
+msgstr ""
 
 msgid "Binary log file name"
-msgstr "Nom du fichier de logs binaire"
+msgstr ""
 
 msgid "Text log file name"
-msgstr "Nom du fichier de logs texte"
+msgstr ""
 
 msgid "Save"
 msgstr ""
-
-#~ msgid "Settings"
-#~ msgstr "Paramètres"

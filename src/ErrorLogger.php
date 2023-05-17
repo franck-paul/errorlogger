@@ -1,14 +1,25 @@
 <?php
 /**
- * @brief errorLogger, a plugin for Dotclear 2
+ * @brief errorlogger, a plugin for Dotclear 2
  *
  * @package Dotclear
  * @subpackage Plugins
  *
- * @author Bruno Hondelatte and contributors
+ * @author Franck Paul and contributors
  *
+ * @copyright Franck Paul carnet.franck.paul@gmail.com
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
+declare(strict_types=1);
+
+namespace Dotclear\Plugin\errorlogger;
+
+use dcCore;
+use dcNamespace;
+use dcPage;
+use Dotclear\Helper\Date;
+use Dotclear\Helper\L10n;
+
 class ErrorLogger
 {
     public $errnos;
@@ -82,24 +93,24 @@ class ErrorLogger
     public function initSettings(): array
     {
         $this->default_settings = [
-            'backtrace'   => ['boolean', false, 'Enable backtrace in logs'],
-            'silent_mode' => ['boolean', false, 'Silent native errors, only show logs'],
-            'enabled'     => ['boolean', false, 'Enable error logger'],
-            'annoy_user'  => ['boolean', true, ''],
-            'bin_file'    => ['string', 'errors.bin', 'Binary log file name'],
-            'txt_file'    => ['string', 'errors.txt', 'Text log file name'],
-            'dir'         => ['string', 'errorlogger', 'directory used for logs (under cache dir)'],
-            'annoy_flag'  => ['boolean', false, 'annoy flag'],
+            'backtrace'   => [dcNamespace::NS_BOOL, false, 'Enable backtrace in logs'],
+            'silent_mode' => [dcNamespace::NS_BOOL, false, 'Silent native errors, only show logs'],
+            'enabled'     => [dcNamespace::NS_BOOL, false, 'Enable error logger'],
+            'annoy_user'  => [dcNamespace::NS_BOOL, true, ''],
+            'bin_file'    => [dcNamespace::NS_STRING, 'errors.bin', 'Binary log file name'],
+            'txt_file'    => [dcNamespace::NS_STRING, 'errors.txt', 'Text log file name'],
+            'dir'         => [dcNamespace::NS_STRING, 'errorlogger', 'directory used for logs (under cache dir)'],
+            'annoy_flag'  => [dcNamespace::NS_BOOL, false, 'annoy flag'],
         ];
 
         $settings = [];
         if (dcCore::app()->blog) {
-            $ws = dcCore::app()->blog->settings->errorlogger;
+            $ns = dcCore::app()->blog->settings->get(My::id());
             foreach ($this->default_settings as $k => $v) {
-                $value = $ws->$k;
+                $value = $ns->$k;
                 if ($value === null) {
                     $settings[$k] = $v[1];
-                    $ws->put($k, $v[1], $v[0], $v[2]);
+                    $ns->put($k, $v[1], $v[0], $v[2]);
                 } else {
                     $settings[$k] = $value;
                 }
@@ -154,8 +165,8 @@ class ErrorLogger
         $this->settings = $this->initSettings();
         if (isset($_GET['ack_errorlogger'])) {
             $lfile = __DIR__ . '/locales/%s/main';
-            if (l10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
-                l10n::set(sprintf($lfile, 'en'));
+            if (L10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
+                L10n::set(sprintf($lfile, 'en'));
             }
 
             $this->acknowledge();
@@ -171,8 +182,8 @@ class ErrorLogger
             }
 
             $lfile = __DIR__ . '/locales/%s/main';
-            if (l10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
-                l10n::set(sprintf($lfile, 'en'));
+            if (L10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
+                L10n::set(sprintf($lfile, 'en'));
             }
             $uri    = explode('?', $_SERVER['REQUEST_URI']);
             $params = $_GET;
@@ -209,12 +220,13 @@ class ErrorLogger
      */
     public function setSettings(array $settings): void
     {
+        $ns = dcCore::app()->blog->settings->get(My::id());
         foreach ($this->default_settings as $k => $v) {
             $value = $settings[$k] ?? $v[1];
             if ($v[0] == 'string' && $value == '') {
                 $value = $v[1];
             }
-            dcCore::app()->blog->settings->errorlogger->put($k, $value);
+            $ns->put($k, $value);
         }
         $this->settings = $settings;
     }
@@ -264,7 +276,8 @@ class ErrorLogger
         }
         if (!$done) {
             $binmsg[] = $msg;
-            dcCore::app()->blog->settings->errorlogger->put('annoy_flag', true, 'boolean');
+            $ns       = dcCore::app()->blog->settings->get(My::id());
+            $ns->put('annoy_flag', true, dcNamespace::NS_BOOL);
         }
         file_put_contents($binfile, serialize($binmsg));
     }
@@ -320,7 +333,7 @@ class ErrorLogger
 
         $msg = [
             'no'   => $errno,
-            'ts'   => dt::str(__($this->ts_format), time(), dcCore::app()->auth->getInfo('user_tz')),
+            'ts'   => Date::str(__($this->ts_format), time(), dcCore::app()->auth->getInfo('user_tz')),
             'str'  => $errstr,
             'file' => $errfile,
             'line' => $errline,

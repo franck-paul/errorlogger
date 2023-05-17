@@ -19,10 +19,16 @@ use dcNsProcess;
 use dcPage;
 use dcPager;
 use Dotclear\Helper\File\Path;
+use Dotclear\Helper\Html\Form\Checkbox;
+use Dotclear\Helper\Html\Form\Form;
+use Dotclear\Helper\Html\Form\Input;
+use Dotclear\Helper\Html\Form\Label;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Submit;
+use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
 use Exception;
-use form;
 
 class Manage extends dcNsProcess
 {
@@ -159,42 +165,96 @@ class Manage extends dcNsProcess
                 }
             }
             echo
-            '</table>' .
-            $pager->getLinks() .
-            '<form action="plugin.php" id="form-logs" method="post">' .
-            '<p><input type="submit" class="delete" name="clearfiles" value="' . __('Clear log files') . '"/>' .
-            form::hidden(['p'], 'errorlogger') . dcCore::app()->formNonce() . '</p></form>';
+            '</table>';
+
+            echo $pager->getLinks();
+
+            echo
+            (new Form('form-logs'))
+                ->action(dcCore::app()->admin->getPageURL())
+                ->method('post')
+                ->fields([
+                    // Submit
+                    (new Para())->items([
+                        (new Submit(['clearfiles']))
+                            ->value(__('Clear log files')),
+                        dcCore::app()->formNonce(false),
+                    ]),
+                ])
+            ->render();
         }
         echo
         '</div>';
 
         echo
         '<div class="multi-part" title="' . __('Settings') . '" id="error-settings">' .
-        '<h3>' . __('Settings') . '</h3>' .
-        '<form action="plugin.php" method="post">' .
-        '<p><label for="enabled">' . form::checkbox('enabled', 1, $settings['enabled']) .
-        __('Enable error logging') . '</label></p>' .
-        '<p><label for="backtrace">' . form::checkbox('backtrace', 1, $settings['backtrace']) .
-        __('Enable backtrace logging') . '</label></p>' .
-        '<p><label for="silent_mode">' . form::checkbox('silent_mode', 1, $settings['silent_mode']) .
-        __('Enable silent mode : standard errors will only be logged, no output') . '</label></p>' .
-        (
-            isset($_GET['annoy']) ?
-            ('<p class="info">' . __('If you do not want to be annoyed with warning messages, unselect the checkbox below') . '</p>') :
-            ''
-        ) .
-        '<p><label for="annoy_user">' . form::checkbox('annoy_user', 1, $settings['annoy_user']) .
-        __('Enable Annoying mode : warn user every time a new error has been detected') . '</label></p>' .
-        '<p><label for="dir">' . __('Directory for logs (will be created in dotclear cache dir)') . ' : </label>' .
-        form::field('dir', 20, 255, Html::escapeHTML($settings['dir'])) . '</p>' .
-        '<p><label for="bin_file">' . __('Binary log file name') . ' : </label>' .
-        form::field('bin_file', 20, 255, Html::escapeHTML($settings['bin_file'])) . '</p>' .
-        '<p><label for="txt_file">' . __('Text log file name') . ' : </label>' .
-        form::field('txt_file', 20, 255, Html::escapeHTML($settings['txt_file'])) . '</p>' .
-        '<p><input type="submit" value="' . __('Save') . ' (s)" ' . 'accesskey="s" name="save" /> ' .
-        form::hidden('p', 'errorlogger') . dcCore::app()->formNonce() .
-        '</p></form>' .
-        '</div>';
+        '<h3>' . __('Settings') . '</h3>';
+
+        echo
+        (new Form('form-options'))
+            ->action(dcCore::app()->admin->getPageURL())
+            ->method('post')
+            ->fields([
+                (new Para())->items([
+                    (new Checkbox('enabled', $settings['enabled']))
+                        ->value(1)
+                        ->label((new Label(__('Enable error logging'), Label::INSIDE_TEXT_AFTER))),
+                ]),
+                (new Para())->items([
+                    (new Checkbox('backtrace', $settings['backtrace']))
+                        ->value(1)
+                        ->label((new Label(__('Enable backtrace logging'), Label::INSIDE_TEXT_AFTER))),
+                ]),
+                (new Para())->items([
+                    (new Checkbox('silent_mode', $settings['silent_mode']))
+                        ->value(1)
+                        ->label((new Label(__('Enable silent mode : standard errors will only be logged, no output'), Label::INSIDE_TEXT_AFTER))),
+                ]),
+                (new Para())->class('info')->items([
+                    (new Text(null, __('If you do not want to be annoyed with warning messages, unselect the checkbox below'))),
+                ]),
+                (new Para())->items([
+                    (new Checkbox('annoy_user', $settings['annoy_user']))
+                        ->value(1)
+                        ->label((new Label(__('Enable Annoying mode : warn user every time a new error has been detected'), Label::INSIDE_TEXT_AFTER))),
+                ]),
+                (new Para())->items([
+                    (new Input('dir'))
+                        ->size(20)
+                        ->maxlength(256)
+                        ->value(Html::escapeHTML($settings['dir']))
+                        ->required(true)
+                        ->placeholder('errorlogger')
+                        ->label((new Label(__('Directory for logs (will be created in dotclear cache dir)'), Label::OUTSIDE_TEXT_BEFORE))),
+                ]),
+                (new Para())->items([
+                    (new Input('bin_file'))
+                        ->size(20)
+                        ->maxlength(256)
+                        ->value(Html::escapeHTML($settings['bin_file']))
+                        ->required(true)
+                        ->placeholder('errorlogger')
+                        ->label((new Label(__('Binary log file name'), Label::OUTSIDE_TEXT_BEFORE))),
+                ]),
+                (new Para())->items([
+                    (new Input('txt_file'))
+                        ->size(20)
+                        ->maxlength(256)
+                        ->value(Html::escapeHTML($settings['txt_file']))
+                        ->required(true)
+                        ->placeholder('errorlogger')
+                        ->label((new Label(__('Text log file name'), Label::OUTSIDE_TEXT_BEFORE))),
+                ]),
+                // Submit
+                (new Para())->items([
+                    (new Submit(['save']))
+                        ->value(__('Save')),
+                    dcCore::app()->formNonce(false),
+                ]),
+            ])
+        ->render();
+
+        echo '</div>';
 
         dcPage::closeModule();
     }

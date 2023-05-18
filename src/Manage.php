@@ -112,7 +112,7 @@ class Manage extends dcNsProcess
             dcCore::app()->blog->themes_path,               // Theme
             ...explode(PATH_SEPARATOR, DC_PLUGINS_ROOT),    // Plugins
         ]);
-        $prefixes = ['(core)', '(theme)', '(plugin)'];
+        $prefixes = ['[core]', '[theme]', '[plugin]'];
 
         echo
         '<div class="multi-part" title="' . __('Errors log') . '" id="error-logs">' .
@@ -137,31 +137,41 @@ class Manage extends dcNsProcess
             '</tr>';
 
             for ($k = $offset; ($k < count($logs)) && ($k < $offset + $nb_per_page); $k++) {
-                $l    = $logs[$k];
-                $file = $l['file'];
+                $l           = $logs[$k];
+                $file        = $l['file'];
+                $description = $l['str'];
+                $backtrace   = $l['backtrace'] ?? [];
                 foreach ($bases as $index => $base) {
+                    // Filter bases (beginning of path) of file
                     if (strstr($file, $base)) {
                         $file = $prefixes[min($index, 2)] . substr($file, strlen($base));
                     }
+                    // Filter bases in description
+                    $description = str_replace($base, $prefixes[min($index, 2)], $description);
+                    // Filter backtrace
+                    foreach ($backtrace as $key => $trace) {
+                        $backtrace[$key] = str_replace($base, $prefixes[min($index, 2)], $trace);
+                    }
                 }
+
                 echo
                 '<tr class="line" id="p' . $k . '">' .
                 '<td class="nowrap">' . Html::escapeHTML($l['ts']) . '</td>' .
                 '<td>' . Html::escapeHTML(dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
                 '<td>' . Html::escapeHTML($file . ':' . $l['line']) . '</td>' .
-                '<td>' . Html::escapeHTML($l['str']) . '</td>' .
+                '<td>' . Html::escapeHTML($description) . '</td>' .
                 '<td>' . Html::escapeHTML((string) $l['count']) . '</td>' .
                 '<td>' . Html::escapeHTML($l['url']) . '</td>' .
                 '</tr>' ;
-                if (isset($l['backtrace'])) {
+                if (count($backtrace)) {
                     echo
-                    '<tr id="pe' . $k . '"><td colspan="6"><strong>' . __('Backtrace') . '</strong><ul>';
-                    foreach ($l['backtrace'] as $b) {
+                    '<tr id="pe' . $k . '"><td colspan="6"><strong>' . __('Backtrace') . '</strong><ol>';
+                    foreach ($backtrace as $trace) {
                         echo
-                        '<li>' . $b . '</li>';
+                        '<li>' . $trace . '</li>';
                     }
                     echo
-                    '</ul></td></tr>';
+                    '</ol></td></tr>';
                 }
             }
             echo

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dotclear 2 errorlogger module\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-17 18:22+0200\n"
+"POT-Creation-Date: 2023-05-31 13:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,6 +32,18 @@ msgid "Acknowledge"
 msgstr ""
 
 msgid "Don't bother me again"
+msgstr ""
+
+msgid "Empty errorlogger cache directory"
+msgstr ""
+
+msgid "Errorlogger cache directory emptied."
+msgstr ""
+
+msgid "Failed to empty errorlogger cache directory."
+msgstr ""
+
+msgid "Errorlogger keep every PHP errors during execution."
 msgstr ""
 
 msgid "Settings have been successfully updated"

@@ -365,7 +365,11 @@ class ErrorLogger
      */
     public function clearLogs(): void
     {
-        @unlink($this->getFileName('bin_file'));
-        @unlink($this->getFileName('txt_file'));
+        if (file_exists($this->getFileName('bin_file'))) {
+            @unlink($this->getFileName('bin_file'));
+        }
+        if (file_exists($this->getFileName('txt_file'))) {
+            @unlink($this->getFileName('txt_file'));
+        }
     }
 }

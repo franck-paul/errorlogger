@@ -18,6 +18,7 @@ use dcAdmin;
 use dcCore;
 use dcFavorites;
 use dcNsProcess;
+use Dotclear\Plugin\errorlogger\MaintenanceTask\ErrorloggerCache;
 
 class Backend extends dcNsProcess
 {
@@ -42,15 +43,20 @@ class Backend extends dcNsProcess
             My::checkContext(My::MENU)
         );
 
-        dcCore::app()->addBehavior('adminDashboardFavoritesV2', function (dcFavorites $favs) {
-            $favs->register('errorlogger', [
-                'title'      => __('Error Logger'),
-                'url'        => My::makeUrl(),
-                'small-icon' => My::icons(),
-                'large-icon' => My::icons(),
-                My::checkContext(My::MENU),
-            ]);
-        });
+        dcCore::app()->addBehaviors([
+            'adminDashboardFavoritesV2' => function (dcFavorites $favs) {
+                $favs->register('errorlogger', [
+                    'title'      => __('Error Logger'),
+                    'url'        => My::makeUrl(),
+                    'small-icon' => My::icons(),
+                    'large-icon' => My::icons(),
+                    My::checkContext(My::MENU),
+                ]);
+            },
+            'dcMaintenanceInit' => function ($maintenance) {
+                $maintenance->addTask(ErrorloggerCache::class);
+            },
+        ]);
 
         return true;
     }

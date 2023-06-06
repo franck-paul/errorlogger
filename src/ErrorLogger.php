@@ -154,7 +154,7 @@ class ErrorLogger
             }
             $_SESSION['notifications'] = $notifications;
         }
-        dcCore::app()->blog->settings->errorlogger->put('annoy_flag', false);
+        dcCore::app()->blog->settings->get(My::id())->put('annoy_flag', false, dcNamespace::NS_BOOL);
     }
 
     /**
@@ -171,7 +171,7 @@ class ErrorLogger
 
             $this->acknowledge();
             dcPage::addSuccessNotice(__('Error Logs acknowledged.'));
-        } elseif ($this->settings['annoy_user'] && dcCore::app()->blog->settings->errorlogger->annoy_flag && !$this->already_annoyed) {
+        } elseif ($this->settings['annoy_user'] && dcCore::app()->blog->settings->get(My::id())->annoy_flag && !$this->already_annoyed) {
             if (isset($_SESSION['notifications'])) {
                 $notifications = $_SESSION['notifications'];
                 foreach ($notifications as $n) {

@@ -89,7 +89,8 @@ class Manage extends dcNsProcess
 
         $head = dcPage::jsPageTabs('error-logs') .
             dcPage::jsJson('errorlogger', ['confirm_delete_logs' => __('Are you sure you want to delete log files ?')]) .
-            dcPage::jsModuleLoad(My::id() . '/js/admin.js', dcCore::app()->getVersion(My::id()));
+            dcPage::jsModuleLoad(My::id() . '/js/admin.js') .
+            dcPage::cssModuleLoad(My::id() . '/css/admin.css');
 
         dcPage::openModule(__('ErrorLogger'), $head);
 
@@ -157,10 +158,10 @@ class Manage extends dcNsProcess
                 echo
                 '<tr class="line" id="p' . $k . '">' .
                 '<td class="nowrap">' . Html::escapeHTML($l['ts']) . '</td>' .
-                '<td>' . Html::escapeHTML(dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no']) . '</td>' .
+                '<td class="nowrap">' . Html::escapeHTML((string) (dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no'])) . '</td>' .
                 '<td>' . Html::escapeHTML($file . ':' . $l['line']) . '</td>' .
                 '<td>' . Html::escapeHTML($description) . '</td>' .
-                '<td>' . Html::escapeHTML((string) $l['count']) . '</td>' .
+                '<td class="nowrap count">' . Html::escapeHTML((string) $l['count']) . '</td>' .
                 '<td>' . Html::escapeHTML($l['url']) . '</td>' .
                 '</tr>' ;
                 if (count($backtrace)) {

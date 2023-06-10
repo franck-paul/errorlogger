@@ -46,5 +46,5 @@ $(() => {
   });
 
   // Confirm post deletion
-  $('input[name="clearfiles"]').click(() => window.confirm(dotclear.msg.confirm_delete_logs));
+  $('input[name="clearfiles"]').on('click', () => window.confirm(dotclear.msg.confirm_delete_logs));
 });

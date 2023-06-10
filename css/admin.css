@@ -1,0 +1,6 @@
+#logs-list td {
+  word-break: break-all;
+}
+#logs-list th {
+  word-break: inherit;
+}

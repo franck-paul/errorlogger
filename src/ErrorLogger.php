@@ -194,9 +194,9 @@ class ErrorLogger
             $ack_uri                   = $uri[0] . '?' . http_build_query($params, '', '&amp;');
             dcPage::addWarningNotice(
                 '<p>' . __('Some new error messages have been detected') . '</p>' .
-                '<p><a class="button" href="plugin.php?p=errorlogger">' . __('View error logs') . '</a> ' .
+                '<p><a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ' .
                 '<a class="button" href="' . $ack_uri . '">' . __('Acknowledge') . '</a> ' .
-                '<a class="button" href="plugin.php?p=errorlogger&amp;annoy=1#error-settings">' . __("Don't bother me again") . '</a></p>',
+                '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a></p>',
                 ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]
             );
             $this->already_annoyed = true;

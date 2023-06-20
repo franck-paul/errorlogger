@@ -27,7 +27,6 @@ use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Form\Submit;
 use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
-use Dotclear\Helper\Network\Http;
 use Exception;
 
 class Manage extends dcNsProcess
@@ -64,12 +63,12 @@ class Manage extends dcNsProcess
                 ];
                 dcCore::app()->errorlogger->setSettings($settings);
                 dcPage::addSuccessNotice(__('Settings have been successfully updated'));
-                Http::redirect(dcCore::app()->admin->getPageURL() . '#error-settings');
+                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-settings');
             } elseif (isset($_POST['clearfiles'])) {
                 dcCore::app()->errorlogger->clearLogs();
                 dcCore::app()->errorlogger->acknowledge();
                 dcPage::addSuccessNotice(__('Log files have been successfully cleared'));
-                Http::redirect(dcCore::app()->admin->getPageURL() . '#error-logs');
+                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-logs');
             }
         } catch (Exception $e) {
             dcCore::app()->error->add($e->getMessage());

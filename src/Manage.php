@@ -15,9 +15,10 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\errorlogger;
 
 use dcCore;
-use dcNsProcess;
-use dcPage;
-use dcPager;
+use Dotclear\Core\Backend\Listing\Pager;
+use Dotclear\Core\Backend\Notices;
+use Dotclear\Core\Backend\Page;
+use Dotclear\Core\Process;
 use Dotclear\Helper\File\Path;
 use Dotclear\Helper\Html\Form\Checkbox;
 use Dotclear\Helper\Html\Form\Form;
@@ -29,17 +30,14 @@ use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
 use Exception;
 
-class Manage extends dcNsProcess
+class Manage extends Process
 {
-    protected static $init = false; /** @deprecated since 2.27 */
     /**
      * Initializes the page.
      */
     public static function init(): bool
     {
-        static::$init = My::checkContext(My::MANAGE);
-
-        return static::$init;
+        return self::status(My::checkContext(My::MANAGE));
     }
 
     /**
@@ -47,7 +45,7 @@ class Manage extends dcNsProcess
      */
     public static function process(): bool
     {
-        if (!static::$init) {
+        if (!self::status()) {
             return false;
         }
 
@@ -63,13 +61,13 @@ class Manage extends dcNsProcess
                     'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
                 ];
                 dcCore::app()->errorlogger->setSettings($settings);
-                dcPage::addSuccessNotice(__('Settings have been successfully updated'));
-                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-settings');
+                Notices::addSuccessNotice(__('Settings have been successfully updated'));
+                dcCore::app()->admin->url->redirect('admin.plugin.' . My::id(), [], '#error-settings');
             } elseif (isset($_POST['clearfiles'])) {
                 dcCore::app()->errorlogger->clearLogs();
                 dcCore::app()->errorlogger->acknowledge();
-                dcPage::addSuccessNotice(__('Log files have been successfully cleared'));
-                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-logs');
+                Notices::addSuccessNotice(__('Log files have been successfully cleared'));
+                dcCore::app()->admin->url->redirect('admin.plugin.' . My::id(), [], '#error-logs');
             }
         } catch (Exception $e) {
             dcCore::app()->error->add($e->getMessage());
@@ -83,24 +81,24 @@ class Manage extends dcNsProcess
      */
     public static function render(): void
     {
-        if (!static::$init) {
+        if (!self::status()) {
             return;
         }
 
-        $head = dcPage::jsPageTabs('error-logs') .
-            dcPage::jsJson('errorlogger', ['confirm_delete_logs' => __('Are you sure you want to delete log files ?')]) .
-            dcPage::jsModuleLoad(My::id() . '/js/admin.js') .
-            dcPage::cssModuleLoad(My::id() . '/css/admin.css');
+        $head = Page::jsPageTabs('error-logs') .
+            Page::jsJson('errorlogger', ['confirm_delete_logs' => __('Are you sure you want to delete log files ?')]) .
+            My::jsLoad('admin.js') .
+            My::cssLoad('admin.css');
 
-        dcPage::openModule(__('ErrorLogger'), $head);
+        Page::openModule(__('ErrorLogger'), $head);
 
-        echo dcPage::breadcrumb(
+        echo Page::breadcrumb(
             [
                 Html::escapeHTML(dcCore::app()->blog->name) => '',
                 __('Error Logger')                          => '',
             ]
         );
-        echo dcPage::notices();
+        echo Notices::getNotices();
 
         // Form
         $settings    = dcCore::app()->errorlogger->getSettings();
@@ -123,7 +121,7 @@ class Manage extends dcNsProcess
         if (!count($logs)) {
             echo '<p>' . __('No logs') . '</p>';
         } else {
-            $pager = new dcPager($page, count($logs), $nb_per_page, 10);
+            $pager = new Pager($page, count($logs), $nb_per_page, 10);
 
             echo $pager->getLinks();
 
@@ -267,6 +265,6 @@ class Manage extends dcNsProcess
 
         echo '</div>';
 
-        dcPage::closeModule();
+        Page::closeModule();
     }
 }

@@ -16,7 +16,7 @@ namespace Dotclear\Plugin\errorlogger;
 
 use dcCore;
 use dcNamespace;
-use dcPage;
+use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Date;
 use Dotclear\Helper\L10n;
 use Exception;
@@ -171,7 +171,7 @@ class ErrorLogger
             }
 
             $this->acknowledge();
-            dcPage::addSuccessNotice(__('Error Logs acknowledged.'));
+            Notices::addSuccessNotice(__('Error Logs acknowledged.'));
         } elseif ($this->settings['annoy_user'] && dcCore::app()->blog->settings->get(My::id())->annoy_flag && !$this->already_annoyed) {
             if (isset($_SESSION['notifications'])) {
                 $notifications = $_SESSION['notifications'];
@@ -197,16 +197,16 @@ class ErrorLogger
             $my_uri       = '';
             $my_uri_annoy = '';
 
-            if (isset(dcCore::app()->adminurl)) {
+            if (isset(dcCore::app()->admin->url)) {
                 try {
-                    $my_uri       = '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
-                    $my_uri_annoy = '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
+                    $my_uri       = '<a class="button" href="' . dcCore::app()->admin->url->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
+                    $my_uri_annoy = '<a class="button" href="' . dcCore::app()->admin->url->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
                 } catch (Exception $e) {
                     // Ignore exception here
                 }
             }
 
-            dcPage::addWarningNotice(
+            Notices::addWarningNotice(
                 '<p>' . __('Some new error messages have been detected') . '</p>' .
                 '<p>' . $my_uri . '<a class="button" href="' . $ack_uri . '">' . __('Acknowledge') . '</a> ' . $my_uri_annoy . '</p>',
                 ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]

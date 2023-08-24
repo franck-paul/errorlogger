@@ -1,11 +1,11 @@
 <modules xmlns:da="http://dotaddict.org/da/">
   <module id="errorlogger">
     <name>ErrorLogger</name>
-    <version>2.6.2</version>
+    <version>3.0</version>
     <author>Bruno Hondelatte</author>
     <desc>Error logger for Dotclear2</desc>
-    <file>https://github.com/franck-paul/errorlogger/releases/download/2.6.2/plugin-errorlogger-2.6.2.zip</file>
-    <da:dcmin>2.26</da:dcmin>
+    <file>https://github.com/franck-paul/errorlogger/releases/download/3.0/plugin-errorlogger-3.0.zip</file>
+    <da:dcmin>2.27</da:dcmin>
     <da:details>https://open-time.net/?q=errorlogger</da:details>
     <da:support>https://github.com/franck-paul/errorlogger</da:support>
   </module>

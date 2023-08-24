@@ -106,7 +106,7 @@ class ErrorLogger
 
         $settings = [];
         if (dcCore::app()->blog) {
-            $ns = dcCore::app()->blog->settings->get(My::id());
+            $ns = My::settings();
             foreach ($this->default_settings as $k => $v) {
                 $value = $ns->$k;
                 if ($value === null) {
@@ -155,7 +155,7 @@ class ErrorLogger
             }
             $_SESSION['notifications'] = $notifications;
         }
-        dcCore::app()->blog->settings->get(My::id())->put('annoy_flag', false, dcNamespace::NS_BOOL);
+        My::settings()->put('annoy_flag', false, dcNamespace::NS_BOOL);
     }
 
     /**
@@ -172,7 +172,7 @@ class ErrorLogger
 
             $this->acknowledge();
             Notices::addSuccessNotice(__('Error Logs acknowledged.'));
-        } elseif ($this->settings['annoy_user'] && dcCore::app()->blog->settings->get(My::id())->annoy_flag && !$this->already_annoyed) {
+        } elseif ($this->settings['annoy_user'] && My::settings()?->annoy_flag && !$this->already_annoyed) {
             if (isset($_SESSION['notifications'])) {
                 $notifications = $_SESSION['notifications'];
                 foreach ($notifications as $n) {
@@ -232,7 +232,7 @@ class ErrorLogger
      */
     public function setSettings(array $settings): void
     {
-        $ns = dcCore::app()->blog->settings->get(My::id());
+        $ns = My::settings();
         foreach ($this->default_settings as $k => $v) {
             $value = $settings[$k] ?? $v[1];
             if ($v[0] == 'string' && $value == '') {
@@ -288,7 +288,7 @@ class ErrorLogger
         }
         if (!$done) {
             $binmsg[] = $msg;
-            $ns       = dcCore::app()->blog->settings->get(My::id());
+            $ns       = My::settings();
             $ns->put('annoy_flag', true, dcNamespace::NS_BOOL);
         }
         file_put_contents($binfile, serialize($binmsg));

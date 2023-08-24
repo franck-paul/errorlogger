@@ -90,7 +90,7 @@ class Manage extends Process
             My::jsLoad('admin.js') .
             My::cssLoad('admin.css');
 
-        Page::openModule(__('ErrorLogger'), $head);
+        Page::openModule(My::name(), $head);
 
         echo Page::breadcrumb(
             [
@@ -187,7 +187,7 @@ class Manage extends Process
                     (new Para())->items([
                         (new Submit(['clearfiles']))
                             ->value(__('Clear log files')),
-                        dcCore::app()->formNonce(false),
+                        ... My::hiddenFields(),
                     ]),
                 ])
             ->render();
@@ -258,7 +258,7 @@ class Manage extends Process
                 (new Para())->items([
                     (new Submit(['save']))
                         ->value(__('Save')),
-                    dcCore::app()->formNonce(false),
+                    ... My::hiddenFields(),
                 ]),
             ])
         ->render();

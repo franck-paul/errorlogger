@@ -83,7 +83,7 @@ class ErrorLogger
             $this->ts_format = '%Y-%m-%d %H:%M:%S';
         }
 
-        set_error_handler([$this,'errorHandler']);
+        set_error_handler($this->errorHandler(...));
     }
 
     /**

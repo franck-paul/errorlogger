@@ -172,7 +172,7 @@ class ErrorLogger
 
             $this->acknowledge();
             Notices::addSuccessNotice(__('Error Logs acknowledged.'));
-        } elseif ($this->settings['annoy_user'] && My::settings()?->annoy_flag && !$this->already_annoyed) {
+        } elseif ($this->settings['annoy_user'] && My::settings()->annoy_flag && !$this->already_annoyed) {
             if (isset($_SESSION['notifications'])) {
                 $notifications = $_SESSION['notifications'];
                 foreach ($notifications as $n) {

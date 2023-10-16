@@ -62,12 +62,12 @@ class Manage extends Process
                 ];
                 dcCore::app()->errorlogger->setSettings($settings);
                 Notices::addSuccessNotice(__('Settings have been successfully updated'));
-                dcCore::app()->admin->url->redirect('admin.plugin.' . My::id(), [], '#error-settings');
+                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-settings');
             } elseif (isset($_POST['clearfiles'])) {
                 dcCore::app()->errorlogger->clearLogs();
                 dcCore::app()->errorlogger->acknowledge();
                 Notices::addSuccessNotice(__('Log files have been successfully cleared'));
-                dcCore::app()->admin->url->redirect('admin.plugin.' . My::id(), [], '#error-logs');
+                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-logs');
             }
         } catch (Exception $e) {
             dcCore::app()->error->add($e->getMessage());

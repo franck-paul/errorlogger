@@ -23,37 +23,40 @@ use Exception;
 
 class ErrorLogger
 {
-    public $errnos;
+    /**
+     * @var array<string>
+     */
+    public array $errnos;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $default_settings;
+    protected array $default_settings;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $settings;
+    protected array $settings;
 
     /**
      * @var bool
      */
-    protected $already_annoyed;
+    protected bool $already_annoyed;
 
     /**
      * @var string|null
      */
-    protected $bin_file;
+    protected ?string $bin_file;
 
     /**
      * @var string|null
      */
-    protected $txt_file;
+    protected ?string $txt_file;
 
     /**
      * @var string|null
      */
-    protected $ts_format;
+    protected ?string $ts_format;
 
     /**
      * List of ignored errors
@@ -89,7 +92,7 @@ class ErrorLogger
     /**
      * Initializes the settings.
      *
-     * @return     array
+     * @return     array<string, mixed>
      */
     public function initSettings(): array
     {
@@ -199,8 +202,8 @@ class ErrorLogger
 
             if (isset(dcCore::app()->admin->url)) {
                 try {
-                    $my_uri       = '<a class="button" href="' . dcCore::app()->admin->url->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
-                    $my_uri_annoy = '<a class="button" href="' . dcCore::app()->admin->url->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
+                    $my_uri       = '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
+                    $my_uri_annoy = '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
                 } catch (Exception $e) {
                     // Ignore exception here
                 }
@@ -218,7 +221,7 @@ class ErrorLogger
     /**
      * Gets the settings.
      *
-     * @return     array  The settings.
+     * @return     array<string, mixed>  The settings.
      */
     public function getSettings(): array
     {
@@ -228,7 +231,7 @@ class ErrorLogger
     /**
      * Sets the settings.
      *
-     * @param      array  $settings  The settings
+     * @param      array<string, mixed>  $settings  The settings
      */
     public function setSettings(array $settings): void
     {
@@ -246,7 +249,7 @@ class ErrorLogger
     /**
      * Gets the errors from binary file.
      *
-     * @return     array  The errors.
+     * @return     array<string, array<string, mixed>>  The errors.
      */
     public function getErrors(): array
     {
@@ -267,7 +270,7 @@ class ErrorLogger
     /**
      * Adds a message in the binary file.
      *
-     * @param      array  $msg    The message
+     * @param      array<string, mixed>  $msg    The message
      */
     public function addBinaryMessage(array $msg): void
     {
@@ -297,7 +300,7 @@ class ErrorLogger
     /**
      * Adds a message in the text file.
      *
-     * @param      array  $msg    The message
+     * @param      array<string, mixed>  $msg    The message
      */
     public function addErrorMessage(array $msg): void
     {
@@ -315,7 +318,7 @@ class ErrorLogger
     /**
      * Add a message
      *
-     * @param      array  $msg    The message
+     * @param      array<string, mixed>  $msg    The message
      */
     protected function log(array $msg): void
     {
@@ -369,7 +372,7 @@ class ErrorLogger
         }
         $this->log($msg);
 
-        return ($this->settings['silent_mode']);
+        return (bool) $this->settings['silent_mode'];
     }
 
     /**

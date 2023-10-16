@@ -19,7 +19,7 @@ use Dotclear\Plugin\maintenance\MaintenanceTask;
 
 class ErrorloggerCache extends MaintenanceTask
 {
-    protected $group = 'purge';
+    protected string $group = 'purge';
 
     protected function init(): void
     {

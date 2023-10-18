@@ -255,7 +255,7 @@ class ErrorLogger
     {
         $binfile = $this->getFileName('bin_file');
         if (file_exists($binfile)) {
-            $contents = file_get_contents($binfile);
+            $contents = (string) file_get_contents($binfile);
             $binmsg   = @unserialize($contents);
             if (!is_array($binmsg)) {
                 $binmsg = [];

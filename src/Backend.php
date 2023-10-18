@@ -38,11 +38,11 @@ class Backend extends Process
         dcCore::app()->addBehaviors([
             'adminDashboardFavoritesV2' => function (Favorites $favs) {
                 $favs->register('errorlogger', [
-                    'title'      => __('Error Logger'),
-                    'url'        => My::manageUrl(),
-                    'small-icon' => My::icons(),
-                    'large-icon' => My::icons(),
-                    My::checkContext(My::MENU),
+                    'title'       => __('Error Logger'),
+                    'url'         => My::manageUrl(),
+                    'small-icon'  => My::icons(),
+                    'large-icon'  => My::icons(),
+                    'permissions' => My::checkContext(My::MENU),
                 ]);
             },
             'dcMaintenanceInit' => function ($maintenance) {

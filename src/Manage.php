@@ -142,14 +142,14 @@ class Manage extends Process
                 $backtrace   = $l['backtrace'] ?? [];
                 foreach ($bases as $index => $base) {
                     // Filter bases (beginning of path) of file
-                    if (strstr($file, $base)) {
-                        $file = $prefixes[min($index, 2)] . substr($file, strlen($base));
+                    if (strstr($file, (string) $base)) {
+                        $file = $prefixes[min($index, 2)] . substr($file, strlen((string) $base));
                     }
                     // Filter bases in description
-                    $description = str_replace($base, $prefixes[min($index, 2)], $description);
+                    $description = str_replace((string) $base, $prefixes[min($index, 2)], $description);
                     // Filter backtrace
                     foreach ($backtrace as $key => $trace) {
-                        $backtrace[$key] = str_replace($base, $prefixes[min($index, 2)], $trace);
+                        $backtrace[$key] = str_replace((string) $base, $prefixes[min($index, 2)], $trace);
                     }
                 }
 

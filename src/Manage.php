@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\errorlogger;
 
 use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Backend\Listing\Pager;
 use Dotclear\Core\Backend\Notices;
 use Dotclear\Core\Backend\Page;
@@ -94,8 +95,8 @@ class Manage extends Process
 
         echo Page::breadcrumb(
             [
-                Html::escapeHTML(dcCore::app()->blog->name) => '',
-                __('Error Logger')                          => '',
+                Html::escapeHTML(App::blog()->name()) => '',
+                __('Error Logger')                    => '',
             ]
         );
         echo Notices::getNotices();
@@ -108,7 +109,7 @@ class Manage extends Process
 
         $bases = array_map(fn ($path) => Path::real($path), [
             DC_ROOT,                                        // Core
-            dcCore::app()->blog->themes_path,               // Theme
+            App::blog()->themesPath(),                      // Theme
             ...explode(PATH_SEPARATOR, DC_PLUGINS_ROOT),    // Plugins
         ]);
         $prefixes = ['[core]', '[theme]', '[plugin]'];

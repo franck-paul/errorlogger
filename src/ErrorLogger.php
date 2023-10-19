@@ -16,6 +16,7 @@ namespace Dotclear\Plugin\errorlogger;
 
 use dcCore;
 use dcNamespace;
+use Dotclear\App;
 use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Date;
 use Dotclear\Helper\L10n;
@@ -81,7 +82,7 @@ class ErrorLogger
         $this->already_annoyed = false;
 
         if (dcCore::app()->blog) {
-            $this->ts_format = dcCore::app()->blog->settings->system->date_formats[0] . ' %H:%M:%S';
+            $this->ts_format = App::blog()->settings()->system->date_formats[0] . ' %H:%M:%S';
         } else {
             $this->ts_format = '%Y-%m-%d %H:%M:%S';
         }
@@ -348,7 +349,7 @@ class ErrorLogger
 
         $msg = [
             'no'   => $errno,
-            'ts'   => Date::str(__($this->ts_format), time(), dcCore::app()->auth->getInfo('user_tz')),
+            'ts'   => Date::str(__((string) $this->ts_format), time(), dcCore::app()->auth->getInfo('user_tz')),
             'str'  => $errstr,
             'file' => $errfile,
             'line' => $errline,

@@ -118,9 +118,9 @@ class Manage extends Process
         $offset      = ($page - 1) * $nb_per_page;
 
         $bases = array_map(fn ($path) => Path::real($path), [
-            DC_ROOT,                                        // Core
-            App::blog()->themesPath(),                      // Theme
-            ...explode(PATH_SEPARATOR, DC_PLUGINS_ROOT),    // Plugins
+            App::config()->dotclearRoot(),                              // Core
+            App::blog()->themesPath(),                                  // Theme
+            ...explode(PATH_SEPARATOR, App::config()->pluginsRoot()),   // Plugins
         ]);
         $prefixes = ['[core]', '[theme]', '[plugin]'];
 

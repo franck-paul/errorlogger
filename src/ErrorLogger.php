@@ -136,11 +136,11 @@ class ErrorLogger
      */
     protected function getFilename(string $setting): string
     {
-        if (!is_dir(DC_TPL_CACHE . '/' . $this->settings['dir'])) {
-            mkdir(DC_TPL_CACHE . '/' . $this->settings['dir']);
+        if (!is_dir(App::config()->cacheRoot() . '/' . $this->settings['dir'])) {
+            mkdir(App::config()->cacheRoot() . '/' . $this->settings['dir']);
         }
 
-        return DC_TPL_CACHE . '/' . $this->settings['dir'] . '/' . $this->settings[$setting];
+        return App::config()->cacheRoot() . '/' . $this->settings['dir'] . '/' . $this->settings[$setting];
     }
 
     /**

@@ -14,7 +14,8 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\errorlogger\MaintenanceTask;
 
-use dcCore;
+use Dotclear\App;
+use Dotclear\Plugin\errorlogger\ErrorLogger;
 use Dotclear\Plugin\maintenance\MaintenanceTask;
 
 class ErrorloggerCache extends MaintenanceTask
@@ -32,9 +33,11 @@ class ErrorloggerCache extends MaintenanceTask
 
     public function execute()
     {
-        if (dcCore::app()->errorlogger) {
-            dcCore::app()->errorlogger->clearLogs();
-            dcCore::app()->errorlogger->acknowledge();
+        $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
+
+        if ($errorlogger instanceof ErrorLogger) {
+            $errorlogger->clearLogs();
+            $errorlogger->acknowledge();
         }
 
         return true;

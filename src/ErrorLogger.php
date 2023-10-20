@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\errorlogger;
 
-use dcCore;
-use dcNamespace;
 use Dotclear\App;
 use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Date;
@@ -81,7 +79,7 @@ class ErrorLogger
 
         $this->already_annoyed = false;
 
-        if (dcCore::app()->blog) {
+        if (App::blog()->isDefined()) {
             $this->ts_format = App::blog()->settings()->system->date_formats[0] . ' %H:%M:%S';
         } else {
             $this->ts_format = '%Y-%m-%d %H:%M:%S';
@@ -98,18 +96,18 @@ class ErrorLogger
     public function initSettings(): array
     {
         $this->default_settings = [
-            'backtrace'   => [dcNamespace::NS_BOOL, false, 'Enable backtrace in logs'],
-            'silent_mode' => [dcNamespace::NS_BOOL, false, 'Silent native errors, only show logs'],
-            'enabled'     => [dcNamespace::NS_BOOL, false, 'Enable error logger'],
-            'annoy_user'  => [dcNamespace::NS_BOOL, true, ''],
-            'bin_file'    => [dcNamespace::NS_STRING, 'errors.bin', 'Binary log file name'],
-            'txt_file'    => [dcNamespace::NS_STRING, 'errors.txt', 'Text log file name'],
-            'dir'         => [dcNamespace::NS_STRING, 'errorlogger', 'directory used for logs (under cache dir)'],
-            'annoy_flag'  => [dcNamespace::NS_BOOL, false, 'annoy flag'],
+            'backtrace'   => [App::blogWorkspace()::NS_BOOL, false, 'Enable backtrace in logs'],
+            'silent_mode' => [App::blogWorkspace()::NS_BOOL, false, 'Silent native errors, only show logs'],
+            'enabled'     => [App::blogWorkspace()::NS_BOOL, false, 'Enable error logger'],
+            'annoy_user'  => [App::blogWorkspace()::NS_BOOL, true, ''],
+            'bin_file'    => [App::blogWorkspace()::NS_STRING, 'errors.bin', 'Binary log file name'],
+            'txt_file'    => [App::blogWorkspace()::NS_STRING, 'errors.txt', 'Text log file name'],
+            'dir'         => [App::blogWorkspace()::NS_STRING, 'errorlogger', 'directory used for logs (under cache dir)'],
+            'annoy_flag'  => [App::blogWorkspace()::NS_BOOL, false, 'annoy flag'],
         ];
 
         $settings = [];
-        if (dcCore::app()->blog) {
+        if (App::blog()->isDefined()) {
             $ns = My::settings();
             foreach ($this->default_settings as $k => $v) {
                 $value = $ns->$k;
@@ -159,7 +157,7 @@ class ErrorLogger
             }
             $_SESSION['notifications'] = $notifications;
         }
-        My::settings()->put('annoy_flag', false, dcNamespace::NS_BOOL);
+        My::settings()->put('annoy_flag', false, App::blogWorkspace()::NS_BOOL);
     }
 
     /**
@@ -170,7 +168,7 @@ class ErrorLogger
         $this->settings = $this->initSettings();
         if (isset($_GET['ack_errorlogger'])) {
             $lfile = __DIR__ . '/locales/%s/main';
-            if (L10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
+            if (L10n::set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
                 L10n::set(sprintf($lfile, 'en'));
             }
 
@@ -187,7 +185,7 @@ class ErrorLogger
             }
 
             $lfile = __DIR__ . '/locales/%s/main';
-            if (L10n::set(sprintf($lfile, dcCore::app()->lang)) === false && dcCore::app()->lang != 'en') {
+            if (L10n::set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
                 L10n::set(sprintf($lfile, 'en'));
             }
             $uri    = explode('?', $_SERVER['REQUEST_URI']);
@@ -201,13 +199,11 @@ class ErrorLogger
             $my_uri       = '';
             $my_uri_annoy = '';
 
-            if (isset(dcCore::app()->admin->url)) {
-                try {
-                    $my_uri       = '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
-                    $my_uri_annoy = '<a class="button" href="' . dcCore::app()->adminurl->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
-                } catch (Exception $e) {
-                    // Ignore exception here
-                }
+            try {
+                $my_uri       = '<a class="button" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
+                $my_uri_annoy = '<a class="button" href="' . App::backend()->url()->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
+            } catch (Exception) {
+                // Ignore exception here
             }
 
             Notices::addWarningNotice(
@@ -293,7 +289,7 @@ class ErrorLogger
         if (!$done) {
             $binmsg[] = $msg;
             $ns       = My::settings();
-            $ns->put('annoy_flag', true, dcNamespace::NS_BOOL);
+            $ns->put('annoy_flag', true, App::blogWorkspace()::NS_BOOL);
         }
         file_put_contents($binfile, serialize($binmsg));
     }
@@ -349,7 +345,7 @@ class ErrorLogger
 
         $msg = [
             'no'   => $errno,
-            'ts'   => Date::str(__((string) $this->ts_format), time(), dcCore::app()->auth->getInfo('user_tz')),
+            'ts'   => Date::str(__((string) $this->ts_format), time(), App::auth()->getInfo('user_tz')),
             'str'  => $errstr,
             'file' => $errfile,
             'line' => $errline,

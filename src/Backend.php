@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\errorlogger;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
 use Dotclear\Core\Backend\Menus;
 use Dotclear\Core\Process;
@@ -35,7 +35,7 @@ class Backend extends Process
 
         My::addBackendMenuItem(Menus::MENU_SYSTEM);
 
-        dcCore::app()->addBehaviors([
+        App::behavior()->addBehaviors([
             'adminDashboardFavoritesV2' => function (Favorites $favs) {
                 $favs->register('errorlogger', [
                     'title'       => __('Error Logger'),

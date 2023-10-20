@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\errorlogger;
 
-use dcCore;
 use Dotclear\App;
 use Dotclear\Core\Backend\Listing\Pager;
 use Dotclear\Core\Backend\Notices;
@@ -51,6 +50,11 @@ class Manage extends Process
         }
 
         try {
+            /**
+             * @var        ErrorLogger
+             */
+            $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
+
             if (isset($_POST['save'])) {
                 $settings = [
                     'enabled'     => isset($_POST['enabled'])     && $_POST['enabled']     == 1,
@@ -61,17 +65,17 @@ class Manage extends Process
                     'txt_file'    => isset($_POST['bin_file']) ? $_POST['txt_file'] : '',
                     'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
                 ];
-                dcCore::app()->errorlogger->setSettings($settings);
+                $errorlogger->setSettings($settings);
                 Notices::addSuccessNotice(__('Settings have been successfully updated'));
-                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-settings');
+                My::redirect([], '#error-settings');
             } elseif (isset($_POST['clearfiles'])) {
-                dcCore::app()->errorlogger->clearLogs();
-                dcCore::app()->errorlogger->acknowledge();
+                $errorlogger->clearLogs();
+                $errorlogger->acknowledge();
                 Notices::addSuccessNotice(__('Log files have been successfully cleared'));
-                dcCore::app()->adminurl->redirect('admin.plugin.' . My::id(), [], '#error-logs');
+                My::redirect([], '#error-logs');
             }
         } catch (Exception $e) {
-            dcCore::app()->error->add($e->getMessage());
+            App::error()->add($e->getMessage());
         }
 
         return true;
@@ -102,7 +106,13 @@ class Manage extends Process
         echo Notices::getNotices();
 
         // Form
-        $settings    = dcCore::app()->errorlogger->getSettings();
+
+        /**
+         * @var        ErrorLogger
+         */
+        $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
+
+        $settings    = $errorlogger->getSettings();
         $page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
         $nb_per_page = 30;
         $offset      = ($page - 1) * $nb_per_page;
@@ -118,7 +128,10 @@ class Manage extends Process
         '<div class="multi-part" title="' . __('Errors log') . '" id="error-logs">' .
         '<h3>' . __('Errors log') . '</h3>';
 
-        $logs = array_reverse(dcCore::app()->errorlogger->getErrors());
+        /**
+         * @var array<string|int, array<string, mixed>>
+         */
+        $logs = array_reverse($errorlogger->getErrors());
         if (!count($logs)) {
             echo '<p>' . __('No logs') . '</p>';
         } else {
@@ -157,7 +170,7 @@ class Manage extends Process
                 echo
                 '<tr class="line" id="p' . $k . '">' .
                 '<td class="nowrap">' . Html::escapeHTML($l['ts']) . '</td>' .
-                '<td class="nowrap">' . Html::escapeHTML((string) (dcCore::app()->errorlogger->errnos[$l['no']] ?? $l['no'])) . '</td>' .
+                '<td class="nowrap">' . Html::escapeHTML((string) ($errorlogger->errnos[$l['no']] ?? $l['no'])) . '</td>' .
                 '<td>' . Html::escapeHTML($file . ':' . $l['line']) . '</td>' .
                 '<td>' . Html::escapeHTML($description) . '</td>' .
                 '<td class="nowrap count">' . Html::escapeHTML((string) $l['count']) . '</td>' .
@@ -181,7 +194,7 @@ class Manage extends Process
 
             echo
             (new Form('form-logs'))
-                ->action(dcCore::app()->admin->getPageURL())
+                ->action(App::backend()->getPageURL())
                 ->method('post')
                 ->fields([
                     // Submit
@@ -202,7 +215,7 @@ class Manage extends Process
 
         echo
         (new Form('form-options'))
-            ->action(dcCore::app()->admin->getPageURL())
+            ->action(App::backend()->getPageURL())
             ->method('post')
             ->fields([
                 (new Para())->items([

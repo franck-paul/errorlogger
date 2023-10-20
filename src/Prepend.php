@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\errorlogger;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Core\Process;
 
 class Prepend extends Process
@@ -30,9 +30,16 @@ class Prepend extends Process
             return false;
         }
 
-        if (!isset(dcCore::app()->errorlogger)) {
-            dcCore::app()->errorlogger = new ErrorLogger();
-            dcCore::app()->errorlogger->setup();
+        if (App::task()->checkContext('FRONTEND')) {
+            if (!isset(App::frontend()->errorlogger)) {
+                App::frontend()->errorlogger = new ErrorLogger();
+                App::frontend()->errorlogger->setup();
+            }
+        } else {
+            if (!isset(App::backend()->errorlogger)) {
+                App::backend()->errorlogger = new ErrorLogger();
+                App::backend()->errorlogger->setup();
+            }
         }
 
         return true;

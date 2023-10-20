@@ -160,7 +160,7 @@ class Manage extends Process
                         $file = $prefixes[min($index, 2)] . substr($file, strlen((string) $base));
                     }
                     // Filter bases in description
-                    $description = str_replace((string) $base, $prefixes[min($index, 2)], $description);
+                    $description = (string) str_replace((string) $base, $prefixes[min($index, 2)], $description);
                     // Filter backtrace
                     foreach ($backtrace as $key => $trace) {
                         $backtrace[$key] = str_replace((string) $base, $prefixes[min($index, 2)], $trace);

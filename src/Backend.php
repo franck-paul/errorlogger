@@ -16,7 +16,6 @@ namespace Dotclear\Plugin\errorlogger;
 
 use Dotclear\App;
 use Dotclear\Core\Backend\Favorites;
-use Dotclear\Core\Backend\Menus;
 use Dotclear\Core\Process;
 use Dotclear\Plugin\errorlogger\MaintenanceTask\ErrorloggerCache;
 
@@ -33,7 +32,7 @@ class Backend extends Process
             return false;
         }
 
-        My::addBackendMenuItem(Menus::MENU_SYSTEM);
+        My::addBackendMenuItem(App::backend()->menus()::MENU_SYSTEM);
 
         App::behavior()->addBehaviors([
             'adminDashboardFavoritesV2' => function (Favorites $favs) {

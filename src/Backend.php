@@ -35,7 +35,7 @@ class Backend extends Process
         My::addBackendMenuItem(App::backend()->menus()::MENU_SYSTEM);
 
         App::behavior()->addBehaviors([
-            'adminDashboardFavoritesV2' => function (Favorites $favs) {
+            'adminDashboardFavoritesV2' => static function (Favorites $favs) {
                 $favs->register('errorlogger', [
                     'title'       => __('Error Logger'),
                     'url'         => My::manageUrl(),
@@ -44,7 +44,7 @@ class Backend extends Process
                     'permissions' => My::checkContext(My::MENU),
                 ]);
             },
-            'dcMaintenanceInit' => function ($maintenance) {
+            'dcMaintenanceInit' => static function ($maintenance) {
                 $maintenance->addTask(ErrorloggerCache::class);
             },
         ]);

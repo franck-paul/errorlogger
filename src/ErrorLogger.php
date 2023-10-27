@@ -30,17 +30,17 @@ class ErrorLogger
     /**
      * @var array<string, mixed>
      */
-    protected array $default_settings;
+    protected array $default_settings = [];
 
     /**
      * @var array<string, mixed>
      */
-    protected array $settings;
+    protected array $settings = [];
 
     /**
      * @var bool
      */
-    protected bool $already_annoyed;
+    protected bool $already_annoyed = false;
 
     /**
      * @var string|null
@@ -76,8 +76,6 @@ class ErrorLogger
             E_ERROR   => 'ERROR',
             E_WARNING => 'WARNING',
             E_NOTICE  => 'NOTICE', ];
-
-        $this->already_annoyed = false;
 
         if (App::blog()->isDefined()) {
             $this->ts_format = App::blog()->settings()->system->date_formats[0] . ' %H:%M:%S';
@@ -155,8 +153,10 @@ class ErrorLogger
                     unset($notifications[$k]);
                 }
             }
+
             $_SESSION['notifications'] = $notifications;
         }
+
         My::settings()->put('annoy_flag', false, App::blogWorkspace()::NS_BOOL);
     }
 
@@ -188,11 +188,13 @@ class ErrorLogger
             if (L10n::set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
                 L10n::set(sprintf($lfile, 'en'));
             }
+
             $uri    = explode('?', $_SERVER['REQUEST_URI']);
             $params = $_GET;
             if (!isset($params['p']) && isset($_POST['p'])) {
                 $params['p'] = $_POST['p'];
             }
+
             $params['ack_errorlogger'] = 1;
             $ack_uri                   = $uri[0] . '?' . http_build_query($params, '', '&amp;');
 
@@ -238,8 +240,10 @@ class ErrorLogger
             if ($v[0] == 'string' && $value == '') {
                 $value = $v[1];
             }
+
             $ns->put($k, $value);
         }
+
         $this->settings = $settings;
     }
 
@@ -280,17 +284,19 @@ class ErrorLogger
         foreach ($binmsg as $k => $b) {
             if (isset($b['hash']) && $b['hash'] == $msg['hash']) {
                 $binmsg[$k]['ts'] = $msg['ts'];
-                $binmsg[$k]['count']++;
+                ++$binmsg[$k]['count'];
                 $done = true;
 
                 break;
             }
         }
+
         if (!$done) {
             $binmsg[] = $msg;
             $ns       = My::settings();
             $ns->put('annoy_flag', true, App::blogWorkspace()::NS_BOOL);
         }
+
         file_put_contents($binfile, serialize($binmsg));
     }
 
@@ -305,8 +311,10 @@ class ErrorLogger
         if (!($fp = fopen($out, 'a'))) {
             return;
         }
+
         $errno = $msg['no'];
         $errno = $this->errnos[$errno] ?? $errno;
+
         $lents = strlen($msg['ts']);
         fprintf($fp, "%s [%7s] URL: %s\n", $msg['ts'], $errno, $msg['url']);
         fprintf($fp, "%s %s (file : %s, %s)\n", str_repeat(' ', $lents + 7 + 1), $msg['str'], $msg['file'], $msg['line']);
@@ -365,8 +373,10 @@ class ErrorLogger
                     $d['function'] ?: 'N/A'
                 );
             }
+
             $msg['backtrace'] = $dbg;
         }
+
         $this->log($msg);
 
         return (bool) $this->settings['silent_mode'];
@@ -380,6 +390,7 @@ class ErrorLogger
         if (file_exists($this->getFileName('bin_file'))) {
             @unlink($this->getFileName('bin_file'));
         }
+
         if (file_exists($this->getFileName('txt_file'))) {
             @unlink($this->getFileName('txt_file'));
         }

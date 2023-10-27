@@ -74,8 +74,8 @@ class Manage extends Process
                 Notices::addSuccessNotice(__('Log files have been successfully cleared'));
                 My::redirect([], '#error-logs');
             }
-        } catch (Exception $e) {
-            App::error()->add($e->getMessage());
+        } catch (Exception $exception) {
+            App::error()->add($exception->getMessage());
         }
 
         return true;
@@ -113,11 +113,11 @@ class Manage extends Process
         $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
 
         $settings    = $errorlogger->getSettings();
-        $page        = !empty($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+        $page        = empty($_GET['page']) ? 1 : max(1, (int) $_GET['page']);
         $nb_per_page = 30;
         $offset      = ($page - 1) * $nb_per_page;
 
-        $bases = array_map(fn ($path) => Path::real($path), [
+        $bases = array_map(static fn($path) => Path::real($path), [
             App::config()->dotclearRoot(),                              // Core
             App::blog()->themesPath(),                                  // Theme
             ...explode(PATH_SEPARATOR, App::config()->pluginsRoot()),   // Plugins
@@ -132,7 +132,7 @@ class Manage extends Process
          * @var array<string|int, array<string, mixed>>
          */
         $logs = array_reverse($errorlogger->getErrors());
-        if (!count($logs)) {
+        if ($logs === []) {
             echo '<p>' . __('No logs') . '</p>';
         } else {
             $pager = new Pager($page, count($logs), $nb_per_page, 10);
@@ -140,8 +140,7 @@ class Manage extends Process
             echo $pager->getLinks();
 
             echo
-            '<table id="logs-list"><tr>' .
-            '<th class="first nowrap">' . __('Date') . '</th>' .
+            '<table id="logs-list"><tr><th class="first nowrap">' . __('Date') . '</th>' .
             '<th>' . __('Type') . '</th>' .
             '<th>' . __('File') . '</th>' .
             '<th>' . __('Description') . '</th>' .
@@ -149,7 +148,7 @@ class Manage extends Process
             '<th>' . __('URL') . '</th>' .
             '</tr>';
 
-            for ($k = $offset; ($k < count($logs)) && ($k < $offset + $nb_per_page); $k++) {
+            for ($k = $offset; ($k < count($logs)) && ($k < $offset + $nb_per_page); ++$k) {
                 $l           = $logs[$k];
                 $file        = $l['file'];
                 $description = $l['str'];
@@ -159,6 +158,7 @@ class Manage extends Process
                     if (strstr($file, (string) $base)) {
                         $file = $prefixes[min($index, 2)] . substr($file, strlen((string) $base));
                     }
+
                     // Filter bases in description
                     $description = (string) str_replace((string) $base, $prefixes[min($index, 2)], $description);
                     // Filter backtrace
@@ -176,17 +176,19 @@ class Manage extends Process
                 '<td class="nowrap count">' . Html::escapeHTML((string) $l['count']) . '</td>' .
                 '<td>' . Html::escapeHTML($l['url']) . '</td>' .
                 '</tr>' ;
-                if (count($backtrace)) {
+                if (count($backtrace) > 0) {
                     echo
                     '<tr id="pe' . $k . '"><td colspan="6"><strong>' . __('Backtrace') . '</strong><ol>';
                     foreach ($backtrace as $trace) {
                         echo
                         '<li>' . $trace . '</li>';
                     }
+
                     echo
                     '</ol></td></tr>';
                 }
             }
+
             echo
             '</table>';
 
@@ -206,6 +208,7 @@ class Manage extends Process
                 ])
             ->render();
         }
+
         echo
         '</div>';
 

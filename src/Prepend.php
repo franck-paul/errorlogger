@@ -35,9 +35,11 @@ class Prepend extends Process
                 App::frontend()->errorlogger = new ErrorLogger();
                 App::frontend()->errorlogger->setup();
             }
-        } elseif (!isset(App::backend()->errorlogger)) {
-            App::backend()->errorlogger = new ErrorLogger();
-            App::backend()->errorlogger->setup();
+        } elseif (App::task()->checkContext('BACKEND')) {
+            if (!isset(App::backend()->errorlogger)) {
+                App::backend()->errorlogger = new ErrorLogger();
+                App::backend()->errorlogger->setup();
+            }
         }
 
         return true;

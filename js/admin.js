@@ -2,7 +2,7 @@
 'use strict';
 
 dotclear.viewLogContent = (img, line) => {
-  const logId = line.id.substr(1);
+  const logId = line.id.substring(1);
   const tr = document.getElementById(`pe${logId}`);
   if (tr.style.display == 'none') {
     $(tr).toggle();

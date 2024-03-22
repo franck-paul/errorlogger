@@ -117,7 +117,7 @@ class Manage extends Process
         $nb_per_page = 30;
         $offset      = ($page - 1) * $nb_per_page;
 
-        $bases = array_map(static fn($path) => Path::real($path), [
+        $bases = array_map(static fn ($path) => Path::real($path), [
             App::config()->dotclearRoot(),                              // Core
             App::blog()->themesPath(),                                  // Theme
             ...explode(PATH_SEPARATOR, App::config()->pluginsRoot()),   // Plugins
@@ -160,7 +160,10 @@ class Manage extends Process
                     }
 
                     // Filter bases in description
-                    $description = (string) str_replace((string) $base, $prefixes[min($index, 2)], $description);
+                    $description = str_replace((string) $base, $prefixes[min($index, 2)], $description);
+                    if (is_array($description)) {
+                        $description = $description[0];
+                    }
                     // Filter backtrace
                     foreach ($backtrace as $key => $trace) {
                         $backtrace[$key] = str_replace((string) $base, $prefixes[min($index, 2)], $trace);

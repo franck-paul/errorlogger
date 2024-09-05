@@ -23,6 +23,6 @@ $this->registerModule(
 
         'details'    => 'https://open-time.net/?q=errorlogger',
         'support'    => 'https://github.com/franck-paul/errorlogger',
-        'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/master/dcstore.xml',
+        'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/main/dcstore.xml',
     ]
 );

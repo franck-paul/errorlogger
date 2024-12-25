@@ -34,7 +34,7 @@ dotclear.logExpander = (line) => {
   td.insertBefore(img, td.firstChild);
 };
 
-$(() => {
+dotclear.ready(() => {
   Object.assign(dotclear.msg, dotclear.getData('errorlogger'));
 
   $('#logs-list tr.line').each(function () {

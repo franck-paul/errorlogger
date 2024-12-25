@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief errorlogger, a plugin for Dotclear 2
  *
@@ -118,9 +119,9 @@ class Manage extends Process
         $offset      = ($page - 1) * $nb_per_page;
 
         $bases = array_map(static fn ($path) => Path::real($path), [
-            App::config()->dotclearRoot(),                              // Core
-            App::blog()->themesPath(),                                  // Theme
-            ...explode(PATH_SEPARATOR, App::config()->pluginsRoot()),   // Plugins
+            App::config()->dotclearRoot(),                                      // Core
+            App::blog()->themesPath(),                                          // Theme
+            ...explode(PATH_SEPARATOR, (string) App::config()->pluginsRoot()),  // Plugins
         ]);
         $prefixes = ['[core]', '[theme]', '[plugin]'];
 
@@ -155,8 +156,8 @@ class Manage extends Process
                 $backtrace   = $l['backtrace'] ?? [];
                 foreach ($bases as $index => $base) {
                     // Filter bases (beginning of path) of file
-                    if (strstr($file, (string) $base)) {
-                        $file = $prefixes[min($index, 2)] . substr($file, strlen((string) $base));
+                    if (strstr((string) $file, (string) $base)) {
+                        $file = $prefixes[min($index, 2)] . substr((string) $file, strlen((string) $base));
                     }
 
                     // Filter bases in description

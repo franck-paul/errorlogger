@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief errorlogger, a plugin for Dotclear 2
  *
@@ -45,12 +46,12 @@ class ErrorLogger
     /**
      * @var string|null
      */
-    protected ?string $bin_file;
+    protected ?string $bin_file = null;
 
     /**
      * @var string|null
      */
-    protected ?string $txt_file;
+    protected ?string $txt_file = null;
 
     /**
      * @var string|null
@@ -189,7 +190,7 @@ class ErrorLogger
                 L10n::set(sprintf($lfile, 'en'));
             }
 
-            $uri    = explode('?', $_SERVER['REQUEST_URI']);
+            $uri    = explode('?', (string) $_SERVER['REQUEST_URI']);
             $params = $_GET;
             if (!isset($params['p']) && isset($_POST['p'])) {
                 $params['p'] = $_POST['p'];
@@ -315,7 +316,7 @@ class ErrorLogger
         $errno = $msg['no'];
         $errno = $this->errnos[$errno] ?? $errno;
 
-        $lents = strlen($msg['ts']);
+        $lents = strlen((string) $msg['ts']);
         fprintf($fp, "%s [%7s] URL: %s\n", $msg['ts'], $errno, $msg['url']);
         fprintf($fp, "%s %s (file : %s, %s)\n", str_repeat(' ', $lents + 7 + 1), $msg['str'], $msg['file'], $msg['line']);
     }

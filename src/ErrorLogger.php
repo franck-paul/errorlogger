@@ -38,24 +38,12 @@ class ErrorLogger
      */
     protected array $settings = [];
 
-    /**
-     * @var bool
-     */
     protected bool $already_annoyed = false;
 
-    /**
-     * @var string|null
-     */
     protected ?string $bin_file = null;
 
-    /**
-     * @var string|null
-     */
     protected ?string $txt_file = null;
 
-    /**
-     * @var string|null
-     */
     protected ?string $ts_format;
 
     /**
@@ -339,8 +327,6 @@ class ErrorLogger
      * @param      string  $errstr   The error message
      * @param      string  $errfile  The file where the error occured
      * @param      int     $errline  The line where the error occured in file
-     *
-     * @return     bool
      */
     public function errorHandler(int $errno, string $errstr, string $errfile = '', int $errline = 0): bool
     {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief errorlogger, a plugin for Dotclear 2
  *
@@ -35,7 +36,7 @@ class Backend extends Process
         My::addBackendMenuItem(App::backend()->menus()::MENU_SYSTEM);
 
         App::behavior()->addBehaviors([
-            'adminDashboardFavoritesV2' => static function (Favorites $favs) {
+            'adminDashboardFavoritesV2' => static function (Favorites $favs): string {
                 $favs->register('errorlogger', [
                     'title'       => __('Error Logger'),
                     'url'         => My::manageUrl(),
@@ -43,9 +44,13 @@ class Backend extends Process
                     'large-icon'  => My::icons(),
                     'permissions' => My::checkContext(My::MENU),
                 ]);
+
+                return '';
             },
-            'dcMaintenanceInit' => static function ($maintenance) {
+            'dcMaintenanceInit' => static function ($maintenance): string {
                 $maintenance->addTask(ErrorloggerCache::class);
+
+                return '';
             },
         ]);
 

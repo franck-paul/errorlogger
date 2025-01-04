@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief errorlogger, a plugin for Dotclear 2
  *
@@ -31,7 +32,7 @@ class ErrorloggerCache extends MaintenanceTask
         $this->description = __('Errorlogger keep every PHP errors during execution.');
     }
 
-    public function execute()
+    public function execute(): bool|int
     {
         $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
 

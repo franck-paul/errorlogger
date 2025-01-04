@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @brief errorLogger, a plugin for Dotclear 2
  *
@@ -16,7 +17,7 @@ $this->registerModule(
     '4.3',
     [
         'type'        => 'plugin',
-        'requires'    => [['core', '2.28']],
+        'requires'    => [['core', '2.33']],
         'permissions' => 'My',
 
         'priority' => 1,

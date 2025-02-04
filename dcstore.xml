@@ -4,6 +4,7 @@
     <version>5.0</version>
     <author>Bruno Hondelatte</author>
     <desc>Error logger for Dotclear2</desc>
+    <date>2003-08-13T13:42:00+0100</date>
     <file>https://github.com/franck-paul/errorlogger/releases/download/5.0/plugin-errorlogger-5.0.zip</file>
     <da:dcmin>2.33</da:dcmin>
     <da:details>https://open-time.net/?q=errorlogger</da:details>

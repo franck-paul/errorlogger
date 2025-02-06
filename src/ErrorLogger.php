@@ -18,8 +18,11 @@ namespace Dotclear\Plugin\errorlogger;
 use Dotclear\App;
 use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Date;
+use Dotclear\Helper\Html\Form\Link;
+use Dotclear\Helper\Html\Form\Note;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Set;
 use Dotclear\Helper\L10n;
-use Exception;
 
 class ErrorLogger
 {
@@ -187,21 +190,30 @@ class ErrorLogger
             $params['ack_errorlogger'] = 1;
             $ack_uri                   = $uri[0] . '?' . http_build_query($params, '', '&amp;');
 
-            $my_uri       = '';
-            $my_uri_annoy = '';
+            $msg = (new Set())
+                ->items([
+                    (new Note())
+                        ->text(__('Some new error messages have been detected')),
+                    (new Para())
+                        ->class('form-buttons')
+                        ->items([
+                            (new Link())
+                                ->class('button')
+                                ->href(My::manageUrl())
+                                ->text(__('View error logs')),
+                            (new Link())
+                                ->class('button')
+                                ->href($ack_uri)
+                                ->text(__('Acknowledge')),
+                            (new Link())
+                                ->class('button')
+                                ->href(My::manageUrl(['annoy' => 1]))
+                                ->text(__("Don't bother me again")),
+                        ]),
+                ])
+            ->render();
 
-            try {
-                $my_uri       = '<a class="button" href="' . App::backend()->url()->get('admin.plugin.' . My::id()) . '">' . __('View error logs') . '</a> ';
-                $my_uri_annoy = '<a class="button" href="' . App::backend()->url()->get('admin.plugin.' . My::id(), ['annoy' => 1]) . '#error-settings">' . __("Don't bother me again") . '</a>';
-            } catch (Exception) {
-                // Ignore exception here
-            }
-
-            Notices::addWarningNotice(
-                '<p>' . __('Some new error messages have been detected') . '</p>' .
-                '<p>' . $my_uri . '<a class="button" href="' . $ack_uri . '">' . __('Acknowledge') . '</a> ' . $my_uri_annoy . '</p>',
-                ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]
-            );
+            Notices::addWarningNotice($msg, ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]);
             $this->already_annoyed = true;
         }
     }

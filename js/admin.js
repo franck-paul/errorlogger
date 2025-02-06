@@ -4,7 +4,7 @@
 dotclear.viewLogContent = (img, line) => {
   const logId = line.id.substring(1);
   const tr = document.getElementById(`pe${logId}`);
-  if (tr.style.display == 'none') {
+  if (tr.style.display === 'none') {
     $(tr).toggle();
     $(line).toggleClass('expand');
     img.src = dotclear.img_minus_src;
@@ -25,7 +25,7 @@ dotclear.logExpander = (line) => {
   img.alt = dotclear.img_plus_alt;
   img.className = 'expand';
   $(img).css('cursor', 'pointer');
-  $(img).css('width', '2em');
+  $(img).css('width', '1.5em');
   img.line = line;
   img.onclick = function () {
     dotclear.viewLogContent(this, this.line);
@@ -39,7 +39,7 @@ dotclear.ready(() => {
 
   $('#logs-list tr.line').each(function () {
     const sib = $(this).next('tr:not(.line)');
-    if (sib.length != 0) {
+    if (sib.length !== 0) {
       sib.toggle();
       dotclear.logExpander(this);
     }

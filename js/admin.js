@@ -1,50 +1,36 @@
-/*global $, dotclear */
+/*global dotclear */
 'use strict';
-
-dotclear.viewLogContent = (img, line) => {
-  const logId = line.id.substring(1);
-  const tr = document.getElementById(`pe${logId}`);
-  if (tr.style.display === 'none') {
-    $(tr).toggle();
-    $(line).toggleClass('expand');
-    img.src = dotclear.img_minus_src;
-    img.alt = dotclear.img_minus_alt;
-    return;
-  }
-  $(tr).toggle();
-  $(line).toggleClass('expand');
-  img.src = dotclear.img_plus_src;
-  img.alt = dotclear.img_plus_alt;
-};
-
-dotclear.logExpander = (line) => {
-  const td = line.firstChild;
-
-  const img = document.createElement('img');
-  img.src = dotclear.img_plus_src;
-  img.alt = dotclear.img_plus_alt;
-  img.className = 'expand';
-  $(img).css('cursor', 'pointer');
-  $(img).css('width', '1.5em');
-  img.line = line;
-  img.onclick = function () {
-    dotclear.viewLogContent(this, this.line);
-  };
-
-  td.insertBefore(img, td.firstChild);
-};
 
 dotclear.ready(() => {
   Object.assign(dotclear.msg, dotclear.getData('errorlogger'));
 
-  $('#logs-list tr.line').each(function () {
-    const sib = $(this).next('tr:not(.line)');
-    if (sib.length !== 0) {
-      sib.toggle();
-      dotclear.logExpander(this);
+  // Hide line with backtrace
+  for (const trace of document.querySelectorAll('#logs-list tbody tr:not(.line)')) {
+    trace.style.display = 'none';
+  }
+
+  const viewLogContent = (line) => {
+    const logId = line.id.substring(1);
+    const target = document.getElementById(`pe${logId}`);
+    if (target.style.display === 'none') {
+      target.style.display = '';
+      line.classList.add('expand');
+      return;
     }
+    target.style.display = 'none';
+    line.classList.remove('expand');
+  };
+
+  dotclear.expandContent({
+    line: document.querySelector('#logs-list thead tr:not(.line)'),
+    lines: document.querySelectorAll('#logs-list tr.line'),
+    callback: viewLogContent,
   });
 
-  // Confirm post deletion
-  $('input[name="clearfiles"]').on('click', () => window.confirm(dotclear.msg.confirm_delete_logs));
+  // Confirm logs deletion
+  document.querySelector('input[name="clearfiles"]')?.addEventListener('click', (event) => {
+    if (window.confirm(dotclear.msg.confirm_delete_logs)) return true;
+    event.preventDefault();
+    return false;
+  });
 });

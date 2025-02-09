@@ -42,9 +42,6 @@ use Dotclear\Helper\Html\Form\Tr;
 use Dotclear\Helper\Html\Html;
 use Exception;
 
-/**
- * @todo switch Helper/Html/Form/...
- */
 class Manage extends Process
 {
     /**

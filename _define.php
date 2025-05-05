@@ -18,7 +18,7 @@ $this->registerModule(
     [
         'date'        => '2025-02-06T14:53:48+0100',
         'type'        => 'plugin',
-        'requires'    => [['core', '2.33']],
+        'requires'    => [['core', '2.34']],
         'permissions' => 'My',
 
         'priority' => 1,
@@ -26,5 +26,6 @@ $this->registerModule(
         'details'    => 'https://open-time.net/?q=errorlogger',
         'support'    => 'https://github.com/franck-paul/errorlogger',
         'repository' => 'https://raw.githubusercontent.com/franck-paul/errorlogger/main/dcstore.xml',
+        'license'    => 'gpl2',
     ]
 );

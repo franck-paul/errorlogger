@@ -31,6 +31,7 @@ use Dotclear\Helper\Html\Form\Note;
 use Dotclear\Helper\Html\Form\Ol;
 use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Form\Set;
+use Dotclear\Helper\Html\Form\Strong;
 use Dotclear\Helper\Html\Form\Submit;
 use Dotclear\Helper\Html\Form\Table;
 use Dotclear\Helper\Html\Form\Tbody;
@@ -196,7 +197,7 @@ class Manage extends Process
                             (new Td())
                                 ->colspan(6)
                                 ->items([
-                                    (new Text('strong', __('Backtrace'))),
+                                    (new Strong(__('Backtrace'))),
                                     (new Ol())
                                         ->items(array_map(fn ($trace): Li => (new Li())->text($trace), $backtrace)),
                                 ]),

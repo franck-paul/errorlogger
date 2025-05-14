@@ -23,6 +23,7 @@ use Dotclear\Helper\Html\Form\Note;
 use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Form\Set;
 use Dotclear\Helper\L10n;
+use Exception;
 
 class ErrorLogger
 {
@@ -190,6 +191,15 @@ class ErrorLogger
             $params['ack_errorlogger'] = 1;
             $ack_uri                   = $uri[0] . '?' . http_build_query($params, '', '&amp;');
 
+            try {
+                $myurl       = My::manageUrl();
+                $myurl_annoy = My::manageUrl(['annoy' => 1]);
+            } catch (Exception) {
+                // In some rare cases, the admin plugin URL is not already ready, so use a static one
+                $myurl       = 'index.php?process=Plugin&p=errorlogger';
+                $myurl_annoy = $myurl . '&annoy=1';
+            }
+
             $msg = (new Set())
                 ->items([
                     (new Note())
@@ -199,7 +209,7 @@ class ErrorLogger
                         ->items([
                             (new Link())
                                 ->class('button')
-                                ->href(My::manageUrl())
+                                ->href($myurl)
                                 ->text(__('View error logs')),
                             (new Link())
                                 ->class('button')
@@ -207,7 +217,7 @@ class ErrorLogger
                                 ->text(__('Acknowledge')),
                             (new Link())
                                 ->class('button')
-                                ->href(My::manageUrl(['annoy' => 1]))
+                                ->href($myurl_annoy)
                                 ->text(__("Don't bother me again")),
                         ]),
                 ])

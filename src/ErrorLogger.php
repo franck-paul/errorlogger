@@ -261,11 +261,11 @@ class ErrorLogger
     /**
      * Gets the errors from binary file.
      *
-     * @return     array<string, array<string, mixed>>  The errors.
+     * @return     array<string|int, array<string, mixed>>  The errors.
      */
     public function getErrors(): array
     {
-        $binfile = $this->getFileName('bin_file');
+        $binfile = $this->getFilename('bin_file');
         if (file_exists($binfile)) {
             $contents = (string) file_get_contents($binfile);
             $binmsg   = @unserialize($contents);
@@ -286,7 +286,7 @@ class ErrorLogger
      */
     public function addBinaryMessage(array $msg): void
     {
-        $binfile = $this->getFileName('bin_file');
+        $binfile = $this->getFilename('bin_file');
         $binmsg  = $this->getErrors();
 
         $msg['hash']  = hash('md5', $msg['no'] . $msg['file'] . $msg['line'] . $msg['str']);
@@ -318,7 +318,7 @@ class ErrorLogger
      */
     public function addErrorMessage(array $msg): void
     {
-        $out = $this->getFileName('txt_file');
+        $out = $this->getFilename('txt_file');
         if (!($fp = fopen($out, 'a'))) {
             return;
         }
@@ -396,12 +396,12 @@ class ErrorLogger
      */
     public function clearLogs(): void
     {
-        if (file_exists($this->getFileName('bin_file'))) {
-            @unlink($this->getFileName('bin_file'));
+        if (file_exists($this->getFilename('bin_file'))) {
+            @unlink($this->getFilename('bin_file'));
         }
 
-        if (file_exists($this->getFileName('txt_file'))) {
-            @unlink($this->getFileName('txt_file'));
+        if (file_exists($this->getFilename('txt_file'))) {
+            @unlink($this->getFilename('txt_file'));
         }
     }
 }

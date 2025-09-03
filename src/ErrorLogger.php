@@ -139,15 +139,15 @@ class ErrorLogger
      */
     public function acknowledge(): void
     {
-        if (isset($_SESSION['notifications'])) {
-            $notifications = $_SESSION['notifications'];
+        if (App::session()->get('notifications')) {
+            $notifications = App::session()->get('notifications');
             foreach ($notifications as $k => $n) {
                 if (isset($n['errorlogger'])) {
                     unset($notifications[$k]);
                 }
             }
 
-            $_SESSION['notifications'] = $notifications;
+            App::session()->set('notifications', $notifications);
         }
 
         My::settings()->put('annoy_flag', false, App::blogWorkspace()::NS_BOOL);
@@ -168,8 +168,8 @@ class ErrorLogger
             $this->acknowledge();
             Notices::addSuccessNotice(__('Error Logs acknowledged.'));
         } elseif ($this->settings['annoy_user'] && My::settings()->annoy_flag && !$this->already_annoyed) {
-            if (isset($_SESSION['notifications'])) {
-                $notifications = $_SESSION['notifications'];
+            if (App::session()->get('notifications')) {
+                $notifications = App::session()->get('notifications');
                 foreach ($notifications as $n) {
                     if (isset($n['errorlogger'])) {
                         return;

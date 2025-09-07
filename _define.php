@@ -14,9 +14,9 @@ $this->registerModule(
     'ErrorLogger',
     'Error logger for Dotclear2',
     'Bruno Hondelatte',
-    '7.0',
+    '7.1',
     [
-        'date'        => '2025-09-03T10:05:31+0200',
+        'date'        => '2025-09-07T16:05:12+0200',
         'type'        => 'plugin',
         'requires'    => [['core', '2.36']],
         'permissions' => 'My',

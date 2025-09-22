@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\errorlogger;
 
 use Dotclear\App;
-use Dotclear\Core\Backend\Notices;
 use Dotclear\Helper\Date;
 use Dotclear\Helper\Html\Form\Link;
 use Dotclear\Helper\Html\Form\Note;
@@ -166,7 +165,7 @@ class ErrorLogger
             }
 
             $this->acknowledge();
-            Notices::addSuccessNotice(__('Error Logs acknowledged.'));
+            App::backend()->notices()->addSuccessNotice(__('Error Logs acknowledged.'));
         } elseif ($this->settings['annoy_user'] && My::settings()->annoy_flag && !$this->already_annoyed) {
             if (App::session()->get('notifications')) {
                 $notifications = App::session()->get('notifications');
@@ -223,7 +222,7 @@ class ErrorLogger
                 ])
             ->render();
 
-            Notices::addWarningNotice($msg, ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]);
+            App::backend()->notices()->addWarningNotice($msg, ['divtag' => true, 'with_ts' => false, 'errorlogger' => true]);
             $this->already_annoyed = true;
         }
     }

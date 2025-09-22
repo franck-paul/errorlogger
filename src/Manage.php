@@ -16,9 +16,6 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\errorlogger;
 
 use Dotclear\App;
-use Dotclear\Core\Backend\Listing\Pager;
-use Dotclear\Core\Backend\Notices;
-use Dotclear\Core\Backend\Page;
 use Dotclear\Helper\File\Path;
 use Dotclear\Helper\Html\Form\Checkbox;
 use Dotclear\Helper\Html\Form\Div;
@@ -81,12 +78,12 @@ class Manage
                     'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
                 ];
                 $errorlogger->setSettings($settings);
-                Notices::addSuccessNotice(__('Settings have been successfully updated'));
+                App::backend()->notices()->addSuccessNotice(__('Settings have been successfully updated'));
                 My::redirect([], '#error-settings');
             } elseif (isset($_POST['clearfiles'])) {
                 $errorlogger->clearLogs();
                 $errorlogger->acknowledge();
-                Notices::addSuccessNotice(__('Log files have been successfully cleared'));
+                App::backend()->notices()->addSuccessNotice(__('Log files have been successfully cleared'));
                 My::redirect([], '#error-logs');
             }
         } catch (Exception $exception) {
@@ -105,20 +102,20 @@ class Manage
             return;
         }
 
-        $head = Page::jsPageTabs('error-logs') .
-            Page::jsJson('errorlogger', ['confirm_delete_logs' => __('Are you sure you want to delete log files ?')]) .
+        $head = App::backend()->page()->jsPageTabs('error-logs') .
+            App::backend()->page()->jsJson('errorlogger', ['confirm_delete_logs' => __('Are you sure you want to delete log files ?')]) .
             My::jsLoad('admin.js') .
             My::cssLoad('admin.css');
 
-        Page::openModule(My::name(), $head);
+        App::backend()->page()->openModule(My::name(), $head);
 
-        echo Page::breadcrumb(
+        echo App::backend()->page()->breadcrumb(
             [
                 Html::escapeHTML(App::blog()->name()) => '',
                 __('Error Logger')                    => '',
             ]
         );
-        echo Notices::getNotices();
+        echo App::backend()->notices()->getNotices();
 
         // Form
 
@@ -148,7 +145,7 @@ class Manage
             $list = (new Note())
                 ->text(__('No logs'));
         } else {
-            $pager = new Pager($page, count($logs), $nb_per_page, 10);
+            $pager = App::backend()->listing()->pager($page, count($logs), $nb_per_page, 10);
 
             $rows = [];
             for ($k = $offset; ($k < count($logs)) && ($k < $offset + $nb_per_page); ++$k) {
@@ -327,6 +324,6 @@ class Manage
 
         ;
 
-        Page::closeModule();
+        App::backend()->page()->closeModule();
     }
 }

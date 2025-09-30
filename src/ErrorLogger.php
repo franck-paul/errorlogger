@@ -21,7 +21,6 @@ use Dotclear\Helper\Html\Form\Link;
 use Dotclear\Helper\Html\Form\Note;
 use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Form\Set;
-use Dotclear\Helper\L10n;
 use Exception;
 
 class ErrorLogger
@@ -160,8 +159,8 @@ class ErrorLogger
         $this->settings = $this->initSettings();
         if (isset($_GET['ack_errorlogger'])) {
             $lfile = __DIR__ . '/locales/%s/main';
-            if (L10n::set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
-                L10n::set(sprintf($lfile, 'en'));
+            if (App::lang()->set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
+                App::lang()->set(sprintf($lfile, 'en'));
             }
 
             $this->acknowledge();
@@ -177,8 +176,8 @@ class ErrorLogger
             }
 
             $lfile = __DIR__ . '/locales/%s/main';
-            if (L10n::set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
-                L10n::set(sprintf($lfile, 'en'));
+            if (App::lang()->set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
+                App::lang()->set(sprintf($lfile, 'en'));
             }
 
             $uri    = explode('?', (string) $_SERVER['REQUEST_URI']);

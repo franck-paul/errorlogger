@@ -30,23 +30,9 @@ class ErrorLogger
      */
     public array $errnos;
 
-    /**
-     * @var array<string, mixed>
-     */
-    protected array $default_settings = [];
-
-    /**
-     * @var array<string, mixed>
-     */
-    protected array $settings = [];
-
     protected bool $already_annoyed = false;
 
-    protected ?string $bin_file = null;
-
-    protected ?string $txt_file = null;
-
-    protected ?string $ts_format;
+    protected string $ts_format = '%Y-%m-%d %H:%M:%S';
 
     /**
      * List of ignored errors
@@ -69,67 +55,37 @@ class ErrorLogger
             E_NOTICE  => 'NOTICE', ];
 
         if (App::blog()->isDefined()) {
-            $this->ts_format = App::blog()->settings()->system->date_formats[0] . ' %H:%M:%S';
-        } else {
-            $this->ts_format = '%Y-%m-%d %H:%M:%S';
+            $ts_format       = is_array(App::blog()->settings()->system->date_formats) && is_string($ts_format = App::blog()->settings()->system->date_formats[0]) ? $ts_format : '%Y-%m-%d';
+            $this->ts_format = $ts_format . ' %H:%M:%S';
         }
 
         set_error_handler($this->errorHandler(...));
     }
 
     /**
-     * Initializes the settings.
-     *
-     * @return     array<string, mixed>
-     */
-    public function initSettings(): array
-    {
-        $this->default_settings = [
-            'backtrace'   => [App::blogWorkspace()::NS_BOOL, false, 'Enable backtrace in logs'],
-            'silent_mode' => [App::blogWorkspace()::NS_BOOL, false, 'Silent native errors, only show logs'],
-            'enabled'     => [App::blogWorkspace()::NS_BOOL, false, 'Enable error logger'],
-            'annoy_user'  => [App::blogWorkspace()::NS_BOOL, true, ''],
-            'bin_file'    => [App::blogWorkspace()::NS_STRING, 'errors.bin', 'Binary log file name'],
-            'txt_file'    => [App::blogWorkspace()::NS_STRING, 'errors.txt', 'Text log file name'],
-            'dir'         => [App::blogWorkspace()::NS_STRING, 'errorlogger', 'directory used for logs (under cache dir)'],
-            'annoy_flag'  => [App::blogWorkspace()::NS_BOOL, false, 'annoy flag'],
-        ];
-
-        $settings = [];
-        if (App::blog()->isDefined()) {
-            $ns = My::settings();
-            foreach ($this->default_settings as $k => $v) {
-                $value = $ns->$k;
-                if ($value === null) {
-                    $settings[$k] = $v[1];
-                    $ns->put($k, $v[1], $v[0], $v[2]);
-                } else {
-                    $settings[$k] = $value;
-                }
-            }
-        } else {
-            foreach ($this->default_settings as $k => $v) {
-                $settings[$k] = $v[1];
-            }
-        }
-
-        return $settings;
-    }
-
-    /**
      * Gets the filename.
      *
-     * @param      string   $setting  The setting (should be bin_file or txt_file)
+     * @param      bool    $binary  True if its the binary one, false if text one
      *
      * @return     string  The filename.
      */
-    protected function getFilename(string $setting): string
+    protected function getFilename(bool $binary): string
     {
-        if (!is_dir(App::config()->cacheRoot() . '/' . $this->settings['dir'])) {
-            mkdir(App::config()->cacheRoot() . '/' . $this->settings['dir']);
+        $settings = My::settings();
+
+        if ($binary) {
+            $filename = is_string($filename = $settings->bin_file) ? $filename : '';
+        } else {
+            $filename = is_string($filename = $settings->txt_file) ? $filename : '';
         }
 
-        return App::config()->cacheRoot() . '/' . $this->settings['dir'] . '/' . $this->settings[$setting];
+        $dir = is_string($dir = $settings->dir) ? $dir : '';
+
+        if ($dir !== '' && !is_dir(App::config()->cacheRoot() . '/' . $dir)) {
+            mkdir(App::config()->cacheRoot() . '/' . $dir);
+        }
+
+        return App::config()->cacheRoot() . '/' . ($dir !== '' ? $dir . '/' : '') . $filename;
     }
 
     /**
@@ -139,9 +95,11 @@ class ErrorLogger
     {
         if (App::session()->get('notifications')) {
             $notifications = App::session()->get('notifications');
-            foreach ($notifications as $k => $n) {
-                if (isset($n['errorlogger'])) {
-                    unset($notifications[$k]);
+            if (is_array($notifications)) {
+                foreach ($notifications as $k => $n) {
+                    if (is_array($n) && isset($n['errorlogger'])) {
+                        unset($notifications[$k]);
+                    }
                 }
             }
 
@@ -156,32 +114,36 @@ class ErrorLogger
      */
     public function setup(): void
     {
-        $this->settings = $this->initSettings();
+        $settings = My::settings();
+
         if (isset($_GET['ack_errorlogger'])) {
             $lfile = __DIR__ . '/locales/%s/main';
-            if (App::lang()->set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
+            if (App::lang()->set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() !== 'en') {
                 App::lang()->set(sprintf($lfile, 'en'));
             }
 
             $this->acknowledge();
             App::backend()->notices()->addSuccessNotice(__('Error Logs acknowledged.'));
-        } elseif ($this->settings['annoy_user'] && My::settings()->annoy_flag && !$this->already_annoyed) {
+        } elseif ((bool) $settings->annoy_user && My::settings()->annoy_flag && !$this->already_annoyed) {
             if (App::session()->get('notifications')) {
                 $notifications = App::session()->get('notifications');
-                foreach ($notifications as $n) {
-                    if (isset($n['errorlogger'])) {
-                        return;
+                if (is_array($notifications)) {
+                    foreach ($notifications as $n) {
+                        if (is_array($n) && isset($n['errorlogger'])) {
+                            return;
+                        }
                     }
                 }
             }
 
             $lfile = __DIR__ . '/locales/%s/main';
-            if (App::lang()->set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() != 'en') {
+            if (App::lang()->set(sprintf($lfile, App::lang()->getLang())) === false && App::lang()->getLang() !== 'en') {
                 App::lang()->set(sprintf($lfile, 'en'));
             }
 
-            $uri    = explode('?', (string) $_SERVER['REQUEST_URI']);
-            $params = $_GET;
+            $request_uri = isset($_SERVER['REQUEST_URI']) && is_string($request_uri = $_SERVER['REQUEST_URI']) ? $request_uri : '';
+            $uri         = explode('?', $request_uri);
+            $params      = $_GET;
             if (!isset($params['p']) && isset($_POST['p'])) {
                 $params['p'] = $_POST['p'];
             }
@@ -227,51 +189,45 @@ class ErrorLogger
     }
 
     /**
-     * Gets the settings.
-     *
-     * @return     array<string, mixed>  The settings.
-     */
-    public function getSettings(): array
-    {
-        return $this->settings;
-    }
-
-    /**
-     * Sets the settings.
-     *
-     * @param      array<string, mixed>  $settings  The settings
-     */
-    public function setSettings(array $settings): void
-    {
-        $ns = My::settings();
-        foreach ($this->default_settings as $k => $v) {
-            $value = $settings[$k] ?? $v[1];
-            if ($v[0] == 'string' && $value == '') {
-                $value = $v[1];
-            }
-
-            $ns->put($k, $value);
-        }
-
-        $this->settings = $settings;
-    }
-
-    /**
      * Gets the errors from binary file.
      *
-     * @return     array<string|int, array<string, mixed>>  The errors.
+     * @return     array<array-key, array{
+     *                 no: int,
+     *                 ts: string,
+     *                 str: string,
+     *                 file: string,
+     *                 line: int,
+     *                 url: string,
+     *                 backtrace?: string[],
+     *                 hash: string,
+     *                 count: int
+     *             }>  The errors.
      */
     public function getErrors(): array
     {
-        $binfile = $this->getFilename('bin_file');
+        $binmsg  = [];
+        $binfile = $this->getFilename(true);
         if (file_exists($binfile)) {
             $contents = (string) file_get_contents($binfile);
-            $binmsg   = @unserialize($contents);
-            if (!is_array($binmsg)) {
+
+            try {
+                /**
+                 * @var array<array-key, array{
+                 *                 no: int,
+                 *                 ts: string,
+                 *                 str: string,
+                 *                 file: string,
+                 *                 line: int,
+                 *                 url: string,
+                 *                 backtrace?: string[],
+                 *                 hash: string,
+                 *                 count: int
+                 *             }>
+                 */
+                $binmsg = unserialize($contents);
+            } catch (Exception) {
                 $binmsg = [];
             }
-        } else {
-            $binmsg = [];
         }
 
         return $binmsg;
@@ -280,18 +236,27 @@ class ErrorLogger
     /**
      * Adds a message in the binary file.
      *
-     * @param      array<string, mixed>  $msg    The message
+     * @param      array{
+     *                 no: int,
+     *                 ts: string,
+     *                 str: string,
+     *                 file: string,
+     *                 line: int,
+     *                 url: string,
+     *                 backtrace?: string[],
+     *             }  $msg    The message
      */
     public function addBinaryMessage(array $msg): void
     {
-        $binfile = $this->getFilename('bin_file');
+        $binfile = $this->getFilename(true);
         $binmsg  = $this->getErrors();
 
-        $msg['hash']  = hash('md5', $msg['no'] . $msg['file'] . $msg['line'] . $msg['str']);
-        $msg['count'] = 1;
-        $done         = false;
+        $hash  = hash('md5', $msg['no'] . $msg['file'] . $msg['line'] . $msg['str']);
+        $count = 1;
+
+        $done = false;
         foreach ($binmsg as $k => $b) {
-            if (isset($b['hash']) && $b['hash'] == $msg['hash']) {
+            if ($b['hash'] === $hash) {
                 $binmsg[$k]['ts'] = $msg['ts'];
                 ++$binmsg[$k]['count'];
                 $done = true;
@@ -301,9 +266,12 @@ class ErrorLogger
         }
 
         if (!$done) {
-            $binmsg[] = $msg;
-            $ns       = My::settings();
-            $ns->put('annoy_flag', true, App::blogWorkspace()::NS_BOOL);
+            $binmsg[] = [
+                ... $msg,
+                $hash,
+                $count,
+            ];
+            My::settings()->put('annoy_flag', true, App::blogWorkspace()::NS_BOOL);
         }
 
         file_put_contents($binfile, serialize($binmsg));
@@ -312,11 +280,19 @@ class ErrorLogger
     /**
      * Adds a message in the text file.
      *
-     * @param      array<string, mixed>  $msg    The message
+     * @param      array{
+     *                 no: int,
+     *                 ts: string,
+     *                 str: string,
+     *                 file: string,
+     *                 line: int,
+     *                 url: string,
+     *                 backtrace?: string[],
+     *             }  $msg    The message
      */
     public function addErrorMessage(array $msg): void
     {
-        $out = $this->getFilename('txt_file');
+        $out = $this->getFilename(false);
         if (!($fp = fopen($out, 'a'))) {
             return;
         }
@@ -332,7 +308,15 @@ class ErrorLogger
     /**
      * Add a message
      *
-     * @param      array<string, mixed>  $msg    The message
+     * @param      array{
+     *                 no: int,
+     *                 ts: string,
+     *                 str: string,
+     *                 file: string,
+     *                 line: int,
+     *                 url: string,
+     *                 backtrace?: string[],
+     *             }  $msg    The message
      */
     protected function log(array $msg): void
     {
@@ -350,7 +334,9 @@ class ErrorLogger
      */
     public function errorHandler(int $errno, string $errstr, string $errfile = '', int $errline = 0): bool
     {
-        if (!$this->settings['enabled'] || (0 === error_reporting())) {
+        $settings = My::settings();
+
+        if ((bool) $settings->enabled === false || error_reporting() === 0) {
             return false;
         }
 
@@ -358,16 +344,29 @@ class ErrorLogger
             return false;
         }
 
+        $user_tz = is_string($user_tz = App::auth()->getInfo('user_tz')) ? $user_tz : null;
+
+        /**
+         * @var array{
+         *          no: int,
+         *          ts: string,
+         *          str: string,
+         *          file: string,
+         *          line: int,
+         *          url: string,
+         *          backtrace?: string[],
+         *      }
+         */
         $msg = [
             'no'   => $errno,
-            'ts'   => Date::str(__((string) $this->ts_format), time(), App::auth()->getInfo('user_tz')),
+            'ts'   => Date::str(__($this->ts_format), time(), $user_tz),
             'str'  => $errstr,
             'file' => $errfile,
             'line' => $errline,
             'url'  => $_SERVER['REQUEST_URI'],
         ];
 
-        if ($this->settings['backtrace']) {
+        if ((bool) $settings->backtrace) {
             $debug = debug_backtrace();
             $dbg   = [];
             unset($debug[0]);
@@ -386,7 +385,7 @@ class ErrorLogger
 
         $this->log($msg);
 
-        return (bool) $this->settings['silent_mode'];
+        return (bool) $settings->silent_mode;
     }
 
     /**
@@ -394,12 +393,12 @@ class ErrorLogger
      */
     public function clearLogs(): void
     {
-        if (file_exists($this->getFilename('bin_file'))) {
-            @unlink($this->getFilename('bin_file'));
+        if (file_exists($this->getFilename(true))) {
+            @unlink($this->getFilename(true));
         }
 
-        if (file_exists($this->getFilename('txt_file'))) {
-            @unlink($this->getFilename('txt_file'));
+        if (file_exists($this->getFilename(false))) {
+            @unlink($this->getFilename(false));
         }
     }
 }

@@ -38,6 +38,7 @@ use Dotclear\Helper\Html\Form\Thead;
 use Dotclear\Helper\Html\Form\Tr;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Process\TraitProcess;
+use Dotclear\Interface\Core\BlogWorkspaceInterface;
 use Exception;
 
 class Manage
@@ -68,16 +69,28 @@ class Manage
             $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
 
             if (isset($_POST['save'])) {
-                $settings = [
-                    'enabled'     => isset($_POST['enabled'])     && $_POST['enabled']     == 1,
-                    'backtrace'   => isset($_POST['backtrace'])   && $_POST['backtrace']   == 1,
-                    'silent_mode' => isset($_POST['silent_mode']) && $_POST['silent_mode'] == 1,
-                    'annoy_user'  => isset($_POST['annoy_user'])  && $_POST['annoy_user']  == 1,
-                    'bin_file'    => $_POST['bin_file'] ?? '',
-                    'txt_file'    => isset($_POST['bin_file']) ? $_POST['txt_file'] : '',
-                    'dir'         => isset($_POST['bin_file']) ? $_POST['dir'] : '',
-                ];
-                $errorlogger->setSettings($settings);
+                // Post data helpers
+                $_Bool = fn (string $name): bool => !empty($_POST[$name]);
+                $_Str  = fn (string $name, string $default = ''): string => isset($_POST[$name]) && is_string($val = $_POST[$name]) ? $val : $default;
+
+                $enabled     = $_Bool('enabled');
+                $backtrace   = $_Bool('backtrace');
+                $silent_mode = $_Bool('silent_mode');
+                $annoy_user  = $_Bool('annoy_user');
+                $bin_file    = $_Str('bin_file');
+                $txt_file    = $bin_file !== '' ? $_Str('txt_file') : '';
+                $dir         = $bin_file !== '' ? $_Str('dir') : '';
+
+                $settings = My::settings();
+
+                $settings->put('enabled', $enabled, BlogWorkspaceInterface::NS_BOOL);
+                $settings->put('backtrace', $backtrace, BlogWorkspaceInterface::NS_BOOL);
+                $settings->put('silent_mode', $silent_mode, BlogWorkspaceInterface::NS_BOOL);
+                $settings->put('annoy_user', $annoy_user, BlogWorkspaceInterface::NS_BOOL);
+                $settings->put('bin_file', $bin_file, BlogWorkspaceInterface::NS_STRING);
+                $settings->put('txt_file', $txt_file, BlogWorkspaceInterface::NS_STRING);
+                $settings->put('dir', $dir, BlogWorkspaceInterface::NS_STRING);
+
                 App::backend()->notices()->addSuccessNotice(__('Settings have been successfully updated'));
                 My::redirect([], '#error-settings');
             } elseif (isset($_POST['clearfiles'])) {
@@ -124,8 +137,13 @@ class Manage
          */
         $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
 
-        $settings    = $errorlogger->getSettings();
-        $page        = empty($_GET['page']) ? 1 : max(1, (int) $_GET['page']);
+        // Variable data helpers
+        $_Bool = fn (mixed $var): bool => (bool) $var;
+        $_Str  = fn (mixed $var, string $default = ''): string => $var !== null && is_string($val = $var) ? $val : $default;
+
+        $settings = My::settings();
+
+        $page        = isset($_GET['page']) && is_numeric($page = $_GET['page']) ? max((int) $page, 1) : 1;
         $nb_per_page = 30;
         $offset      = ($page - 1) * $nb_per_page;
 
@@ -136,9 +154,6 @@ class Manage
         ]);
         $prefixes = ['[core]', '[theme]', '[plugin]'];
 
-        /**
-         * @var array<string|int, array<string, mixed>>
-         */
         $logs = array_reverse($errorlogger->getErrors());
 
         if ($logs === []) {
@@ -149,10 +164,11 @@ class Manage
 
             $rows = [];
             for ($k = $offset; ($k < count($logs)) && ($k < $offset + $nb_per_page); ++$k) {
-                $l           = $logs[$k];
-                $file        = $l['file'];
-                $description = $l['str'];
-                $backtrace   = $l['backtrace'] ?? [];
+                $log         = $logs[$k];
+                $file        = $log['file'];
+                $description = $log['str'];
+                $backtrace   = $log['backtrace'] ?? [];
+
                 foreach ($bases as $index => $base) {
                     // Filter bases (beginning of path) of file
                     if (strstr((string) $file, (string) $base)) {
@@ -161,9 +177,7 @@ class Manage
 
                     // Filter bases in description
                     $description = str_replace((string) $base, $prefixes[min($index, 2)], $description);
-                    if (is_array($description)) {
-                        $description = $description[0];
-                    }
+
                     // Filter backtrace
                     foreach ($backtrace as $key => $trace) {
                         $backtrace[$key] = str_replace((string) $base, $prefixes[min($index, 2)], $trace);
@@ -175,19 +189,19 @@ class Manage
                     ->cols([
                         (new Td())
                             ->class('nowrap')
-                            ->text(Html::escapeHTML($l['ts'])),
+                            ->text(Html::escapeHTML($log['ts'])),
                         (new Td())
                             ->class('nowrap')
-                            ->text(Html::escapeHTML((string) ($errorlogger->errnos[$l['no']] ?? $l['no']))),
+                            ->text(Html::escapeHTML((string) ($errorlogger->errnos[$log['no']] ?? $log['no']))),
                         (new Td())
-                            ->text(Html::escapeHTML($file . ':' . $l['line'])),
+                            ->text(Html::escapeHTML($file . ':' . $log['line'])),
                         (new Td())
                             ->text(Html::escapeHTML($description)),
                         (new Td())
                             ->class(['nowrap', 'count'])
-                            ->text(Html::escapeHTML((string) $l['count'])),
+                            ->text(Html::escapeHTML((string) $log['count'])),
                         (new Td())
-                            ->text(Html::escapeHTML($l['url'])),
+                            ->text(Html::escapeHTML($log['url'])),
                     ]);
 
                 if (count($backtrace) > 0) {
@@ -262,17 +276,17 @@ class Manage
                             ->method('post')
                             ->fields([
                                 (new Para())->items([
-                                    (new Checkbox('enabled', $settings['enabled']))
+                                    (new Checkbox('enabled', $_Bool($settings->enabled)))
                                         ->value(1)
                                         ->label((new Label(__('Enable error logging'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
                                 (new Para())->items([
-                                    (new Checkbox('backtrace', $settings['backtrace']))
+                                    (new Checkbox('backtrace', $_Bool($settings->backtrace)))
                                         ->value(1)
                                         ->label((new Label(__('Enable backtrace logging'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
                                 (new Para())->items([
-                                    (new Checkbox('silent_mode', $settings['silent_mode']))
+                                    (new Checkbox('silent_mode', $_Bool($settings->silent_mode)))
                                         ->value(1)
                                         ->label((new Label(__('Enable silent mode : standard errors will only be logged, no output'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
@@ -280,7 +294,7 @@ class Manage
                                     (new Text(null, __('If you do not want to be annoyed with warning messages, unselect the checkbox below'))),
                                 ]),
                                 (new Para())->items([
-                                    (new Checkbox('annoy_user', $settings['annoy_user']))
+                                    (new Checkbox('annoy_user', $_Bool($settings->annoy_user)))
                                         ->value(1)
                                         ->label((new Label(__('Enable Annoying mode : warn user every time a new error has been detected'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
@@ -288,7 +302,7 @@ class Manage
                                     (new Input('dir'))
                                         ->size(20)
                                         ->maxlength(256)
-                                        ->value(Html::escapeHTML($settings['dir']))
+                                        ->value(Html::escapeHTML($_Str($settings->dir)))
                                         ->required(true)
                                         ->placeholder('errorlogger')
                                         ->label((new Label(__('Directory for logs (will be created in dotclear cache dir)'), Label::OUTSIDE_TEXT_BEFORE))),
@@ -297,7 +311,7 @@ class Manage
                                     (new Input('bin_file'))
                                         ->size(20)
                                         ->maxlength(256)
-                                        ->value(Html::escapeHTML($settings['bin_file']))
+                                        ->value(Html::escapeHTML($_Str($settings->bin_file)))
                                         ->required(true)
                                         ->placeholder('errorlogger')
                                         ->label((new Label(__('Binary log file name'), Label::OUTSIDE_TEXT_BEFORE))),
@@ -306,7 +320,7 @@ class Manage
                                     (new Input('txt_file'))
                                         ->size(20)
                                         ->maxlength(256)
-                                        ->value(Html::escapeHTML($settings['txt_file']))
+                                        ->value(Html::escapeHTML($_Str($settings->txt_file)))
                                         ->required(true)
                                         ->placeholder('errorlogger')
                                         ->label((new Label(__('Text log file name'), Label::OUTSIDE_TEXT_BEFORE))),

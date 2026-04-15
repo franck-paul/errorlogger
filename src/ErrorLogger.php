@@ -200,7 +200,7 @@ class ErrorLogger
      *                 url: string,
      *                 backtrace?: string[],
      *                 hash?: string,
-     *                 count: int
+     *                 count?: int
      *             }>  The errors.
      */
     public function getErrors(): array
@@ -221,7 +221,7 @@ class ErrorLogger
                  *                 url: string,
                  *                 backtrace?: string[],
                  *                 hash?: string,
-                 *                 count: int
+                 *                 count?: int
                  *             }>
                  */
                 $binmsg = unserialize($contents);
@@ -258,6 +258,9 @@ class ErrorLogger
         foreach ($binmsg as $k => $b) {
             if (isset($b['hash']) && $b['hash'] === $hash) {
                 $binmsg[$k]['ts'] = $msg['ts'];
+                if (!isset($binmsg[$k]['count'])) {
+                    $binmsg[$k]['count'] = 0;
+                }
                 ++$binmsg[$k]['count'];
                 $done = true;
 

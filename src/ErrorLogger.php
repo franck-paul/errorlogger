@@ -8,7 +8,7 @@
  *
  * @author Franck Paul and contributors
  *
- * @copyright Franck Paul carnet.franck.paul@gmail.com
+ * @copyright Franck Paul contact@open-time.net
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
 declare(strict_types=1);
@@ -199,7 +199,7 @@ class ErrorLogger
      *                 line: int,
      *                 url: string,
      *                 backtrace?: string[],
-     *                 hash: string,
+     *                 hash?: string,
      *                 count: int
      *             }>  The errors.
      */
@@ -220,7 +220,7 @@ class ErrorLogger
                  *                 line: int,
                  *                 url: string,
                  *                 backtrace?: string[],
-                 *                 hash: string,
+                 *                 hash?: string,
                  *                 count: int
                  *             }>
                  */
@@ -256,7 +256,7 @@ class ErrorLogger
 
         $done = false;
         foreach ($binmsg as $k => $b) {
-            if ($b['hash'] === $hash) {
+            if (isset($b['hash']) && $b['hash'] === $hash) {
                 $binmsg[$k]['ts'] = $msg['ts'];
                 ++$binmsg[$k]['count'];
                 $done = true;

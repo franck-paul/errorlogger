@@ -38,7 +38,6 @@ use Dotclear\Helper\Html\Form\Thead;
 use Dotclear\Helper\Html\Form\Tr;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Process\TraitProcess;
-use Dotclear\Interface\Core\BlogWorkspaceInterface;
 use Exception;
 
 class Manage
@@ -83,13 +82,13 @@ class Manage
 
                 $settings = My::settings();
 
-                $settings->put('enabled', $enabled, BlogWorkspaceInterface::NS_BOOL);
-                $settings->put('backtrace', $backtrace, BlogWorkspaceInterface::NS_BOOL);
-                $settings->put('silent_mode', $silent_mode, BlogWorkspaceInterface::NS_BOOL);
-                $settings->put('annoy_user', $annoy_user, BlogWorkspaceInterface::NS_BOOL);
-                $settings->put('bin_file', $bin_file, BlogWorkspaceInterface::NS_STRING);
-                $settings->put('txt_file', $txt_file, BlogWorkspaceInterface::NS_STRING);
-                $settings->put('dir', $dir, BlogWorkspaceInterface::NS_STRING);
+                $settings->put('enabled', $enabled, App::blogWorkspace()::NS_BOOL);
+                $settings->put('backtrace', $backtrace, App::blogWorkspace()::NS_BOOL);
+                $settings->put('silent_mode', $silent_mode, App::blogWorkspace()::NS_BOOL);
+                $settings->put('annoy_user', $annoy_user, App::blogWorkspace()::NS_BOOL);
+                $settings->put('bin_file', $bin_file, App::blogWorkspace()::NS_STRING);
+                $settings->put('txt_file', $txt_file, App::blogWorkspace()::NS_STRING);
+                $settings->put('dir', $dir, App::blogWorkspace()::NS_STRING);
 
                 App::backend()->notices()->addSuccessNotice(__('Settings have been successfully updated'));
                 My::redirect([], '#error-settings');

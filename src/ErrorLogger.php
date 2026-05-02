@@ -261,6 +261,7 @@ class ErrorLogger
                 if (!isset($binmsg[$k]['count'])) {
                     $binmsg[$k]['count'] = 0;
                 }
+
                 ++$binmsg[$k]['count'];
                 $done = true;
 

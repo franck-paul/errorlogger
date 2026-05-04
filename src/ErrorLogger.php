@@ -63,6 +63,14 @@ class ErrorLogger
     }
 
     /**
+     * Destructs the current instance.
+     */
+    public function __destruct()
+    {
+        restore_error_handler();
+    }
+
+    /**
      * Gets the filename.
      *
      * @param      bool    $binary  True if its the binary one, false if text one

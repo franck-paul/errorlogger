@@ -29,7 +29,7 @@ dotclear.ready(() => {
 
   // Confirm logs deletion
   document.querySelector('input[name="clearfiles"]')?.addEventListener('click', (event) => {
-    if (window.confirm(dotclear.msg.confirm_delete_logs)) return true;
+    if (globalThis.confirm(dotclear.msg.confirm_delete_logs)) return true;
     event.preventDefault();
     return false;
   });

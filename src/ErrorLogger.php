@@ -55,8 +55,11 @@ class ErrorLogger
             E_NOTICE  => 'NOTICE', ];
 
         if (App::blog()->isDefined()) {
-            $ts_format       = is_array(App::blog()->settings()->system->date_formats) && is_string($ts_format = App::blog()->settings()->system->date_formats[0]) ? $ts_format : '%Y-%m-%d';
-            $this->ts_format = $ts_format . ' %H:%M:%S';
+            $date_formats = App::blog()->settings()->get('system')->get('date_formats');
+            if (is_array($date_formats)) {
+                $ts_format       = is_string($ts_format = $date_formats[0]) ? $ts_format : '%Y-%m-%d';
+                $this->ts_format = $ts_format . ' %H:%M:%S';
+            }
         }
 
         set_error_handler($this->errorHandler(...));
@@ -81,13 +84,8 @@ class ErrorLogger
     {
         $settings = My::settings();
 
-        if ($binary) {
-            $filename = is_string($filename = $settings->bin_file) ? $filename : '';
-        } else {
-            $filename = is_string($filename = $settings->txt_file) ? $filename : '';
-        }
-
-        $dir = is_string($dir = $settings->dir) ? $dir : '';
+        $filename = $binary ? $settings->getStr('bin_file', false) : $settings->getStr('txt_file', false);
+        $dir      = $settings->getStr('dir', false);
 
         if ($dir !== '' && !is_dir(App::config()->cacheRoot() . '/' . $dir)) {
             mkdir(App::config()->cacheRoot() . '/' . $dir);
@@ -132,7 +130,10 @@ class ErrorLogger
 
             $this->acknowledge();
             App::backend()->notices()->addSuccessNotice(__('Error Logs acknowledged.'));
-        } elseif ((bool) $settings->annoy_user && My::settings()->annoy_flag && !$this->already_annoyed) {
+        } elseif ($settings->getBool('annoy_user')
+            && My::settings()->getBool('annoy_flag')
+            && !$this->already_annoyed
+        ) {
             if (App::session()->get('notifications')) {
                 $notifications = App::session()->get('notifications');
                 if (is_array($notifications)) {
@@ -348,7 +349,7 @@ class ErrorLogger
     {
         $settings = My::settings();
 
-        if ((bool) $settings->enabled === false || error_reporting() === 0) {
+        if (!$settings->getBool('enabled') || error_reporting() === 0) {
             return false;
         }
 
@@ -378,7 +379,7 @@ class ErrorLogger
             'url'  => $_SERVER['REQUEST_URI'],
         ];
 
-        if ((bool) $settings->backtrace) {
+        if ($settings->getBool('backtrace')) {
             $debug = debug_backtrace();
             $dbg   = [];
             unset($debug[0]);
@@ -397,7 +398,7 @@ class ErrorLogger
 
         $this->log($msg);
 
-        return (bool) $settings->silent_mode;
+        return $settings->getBool('silent_mode', false);
     }
 
     /**

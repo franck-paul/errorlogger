@@ -136,10 +136,6 @@ class Manage
          */
         $errorlogger = App::task()->checkContext('FRONTEND') ? App::frontend()->errorlogger : App::backend()->errorlogger;
 
-        // Variable data helpers
-        $_Bool = fn (mixed $var): bool => (bool) $var;
-        $_Str  = fn (mixed $var, string $default = ''): string => $var !== null && is_string($val = $var) ? $val : $default;
-
         $settings = My::settings();
 
         $page        = isset($_GET['page']) && is_numeric($page = $_GET['page']) ? max((int) $page, 1) : 1;
@@ -279,17 +275,17 @@ class Manage
                             ->method('post')
                             ->fields([
                                 (new Para())->items([
-                                    (new Checkbox('enabled', $_Bool($settings->enabled)))
+                                    (new Checkbox('enabled', $settings->getBool('enabled', false)))
                                         ->value(1)
                                         ->label((new Label(__('Enable error logging'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
                                 (new Para())->items([
-                                    (new Checkbox('backtrace', $_Bool($settings->backtrace)))
+                                    (new Checkbox('backtrace', $settings->getBool('backtrace', false)))
                                         ->value(1)
                                         ->label((new Label(__('Enable backtrace logging'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
                                 (new Para())->items([
-                                    (new Checkbox('silent_mode', $_Bool($settings->silent_mode)))
+                                    (new Checkbox('silent_mode', $settings->getBool('silent_mode', false)))
                                         ->value(1)
                                         ->label((new Label(__('Enable silent mode : standard errors will only be logged, no output'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
@@ -297,7 +293,7 @@ class Manage
                                     (new Text(null, __('If you do not want to be annoyed with warning messages, unselect the checkbox below'))),
                                 ]),
                                 (new Para())->items([
-                                    (new Checkbox('annoy_user', $_Bool($settings->annoy_user)))
+                                    (new Checkbox('annoy_user', $settings->getBool('annoy_user', false)))
                                         ->value(1)
                                         ->label((new Label(__('Enable Annoying mode : warn user every time a new error has been detected'), Label::INSIDE_TEXT_AFTER))),
                                 ]),
@@ -305,7 +301,7 @@ class Manage
                                     (new Input('dir'))
                                         ->size(20)
                                         ->maxlength(256)
-                                        ->value(Html::escapeHTML($_Str($settings->dir)))
+                                        ->value(Html::escapeHTML($settings->getStr('dir', false)))
                                         ->required(true)
                                         ->placeholder('errorlogger')
                                         ->label((new Label(__('Directory for logs (will be created in dotclear cache dir)'), Label::OUTSIDE_TEXT_BEFORE))),
@@ -314,7 +310,7 @@ class Manage
                                     (new Input('bin_file'))
                                         ->size(20)
                                         ->maxlength(256)
-                                        ->value(Html::escapeHTML($_Str($settings->bin_file)))
+                                        ->value(Html::escapeHTML($settings->getStr('bin_file', false)))
                                         ->required(true)
                                         ->placeholder('errorlogger')
                                         ->label((new Label(__('Binary log file name'), Label::OUTSIDE_TEXT_BEFORE))),
@@ -323,7 +319,7 @@ class Manage
                                     (new Input('txt_file'))
                                         ->size(20)
                                         ->maxlength(256)
-                                        ->value(Html::escapeHTML($_Str($settings->txt_file)))
+                                        ->value(Html::escapeHTML($settings->getStr('txt_file', false)))
                                         ->required(true)
                                         ->placeholder('errorlogger')
                                         ->label((new Label(__('Text log file name'), Label::OUTSIDE_TEXT_BEFORE))),

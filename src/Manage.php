@@ -164,9 +164,7 @@ class Manage
                 $description = $log['str'];
                 $backtrace   = $log['backtrace'] ?? [];
 
-                if (!isset($log['count'])) {
-                    $log['count'] = 1;
-                }
+                $log['count'] ??= 1;
 
                 foreach ($bases as $index => $base) {
                     // Filter bases (beginning of path) of file

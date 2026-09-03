@@ -40,8 +40,8 @@ class Backend
         My::addBackendMenuItem(Menus::MENU_SYSTEM);
 
         App::behavior()->addBehaviors([
-            'adminDashboardFavoritesV2' => static function (Favorites $favs): string {
-                $favs->register('errorlogger', [
+            'adminDashboardFavoritesV2' => static function (Favorites $favorites): string {
+                $favorites->register('errorlogger', [
                     'title'          => __('Error Logger'),
                     'url'            => My::manageUrl(),
                     'menu-icon'      => My::icon(),

@@ -137,8 +137,8 @@ class ErrorLogger
             if (App::session()->get('notifications')) {
                 $notifications = App::session()->get('notifications');
                 if (is_array($notifications)) {
-                    foreach ($notifications as $n) {
-                        if (is_array($n) && isset($n['errorlogger'])) {
+                    foreach ($notifications as $notification) {
+                        if (is_array($notification) && isset($notification['errorlogger'])) {
                             return;
                         }
                     }

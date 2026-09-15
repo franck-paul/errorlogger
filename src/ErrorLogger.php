@@ -219,24 +219,20 @@ class ErrorLogger
         if (file_exists($binfile)) {
             $contents = (string) file_get_contents($binfile);
 
-            try {
-                /**
-                 * @var array<array-key, array{
-                 *                 no: int,
-                 *                 ts: string,
-                 *                 str: string,
-                 *                 file: string,
-                 *                 line: int,
-                 *                 url: string,
-                 *                 backtrace?: string[],
-                 *                 hash?: string,
-                 *                 count?: int
-                 *             }>
-                 */
-                $binmsg = unserialize($contents);
-            } catch (Exception) {
-                $binmsg = [];
-            }
+            /**
+             * @var array<array-key, array{
+             *                 no: int,
+             *                 ts: string,
+             *                 str: string,
+             *                 file: string,
+             *                 line: int,
+             *                 url: string,
+             *                 backtrace?: string[],
+             *                 hash?: string,
+             *                 count?: int
+             *             }>
+             */
+            $binmsg = is_array($binmsg = unserialize($contents)) ? $binmsg : [];
         }
 
         return $binmsg;

@@ -306,7 +306,7 @@ class ErrorLogger
         $errno = $msg['no'];
         $errno = $this->errnos[$errno] ?? $errno;
 
-        $lents = strlen((string) $msg['ts']);
+        $lents = strlen($msg['ts']);
         fprintf($fp, "%s [%7s] URL: %s\n", $msg['ts'], $errno, $msg['url']);
         fprintf($fp, "%s %s (file : %s, %s)\n", str_repeat(' ', $lents + 7 + 1), $msg['str'], $msg['file'], $msg['line']);
     }

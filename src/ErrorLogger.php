@@ -346,7 +346,7 @@ class ErrorLogger
             return false;
         }
 
-        if (in_array($errstr, $this->ignored_str)) {
+        if (in_array($errstr, $this->ignored_str, true)) {
             return false;
         }
 

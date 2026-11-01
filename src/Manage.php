@@ -168,7 +168,7 @@ class Manage
 
                 foreach ($bases as $index => $base) {
                     // Filter bases (beginning of path) of file
-                    if (strstr($file, (string) $base)) {
+                    if (str_contains($file, (string) $base)) {
                         $file = $prefixes[min($index, 2)] . substr($file, strlen((string) $base));
                     }
 

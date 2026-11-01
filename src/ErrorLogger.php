@@ -99,7 +99,7 @@ class ErrorLogger
      */
     public function acknowledge(): void
     {
-        if (App::session()->get('notifications')) {
+        if ((bool) App::session()->get('notifications')) {
             $notifications = App::session()->get('notifications');
             if (is_array($notifications)) {
                 foreach ($notifications as $k => $n) {
@@ -130,11 +130,11 @@ class ErrorLogger
 
             $this->acknowledge();
             App::backend()->notices()->addSuccessNotice(__('Error Logs acknowledged.'));
-        } elseif ($settings->getBool('annoy_user')
-            && My::settings()->getBool('annoy_flag')
+        } elseif ($settings->getBool('annoy_user', false)
+            && My::settings()->getBool('annoy_flag', false)
             && !$this->already_annoyed
         ) {
-            if (App::session()->get('notifications')) {
+            if ((bool) App::session()->get('notifications')) {
                 $notifications = App::session()->get('notifications');
                 if (is_array($notifications)) {
                     foreach ($notifications as $notification) {
@@ -299,7 +299,8 @@ class ErrorLogger
     public function addErrorMessage(array $msg): void
     {
         $out = $this->getFilename(false);
-        if (!($fp = fopen($out, 'a'))) {
+        $fp  = fopen($out, 'a');
+        if ($fp === false) {
             return;
         }
 
@@ -342,7 +343,7 @@ class ErrorLogger
     {
         $settings = My::settings();
 
-        if (!$settings->getBool('enabled') || error_reporting() === 0) {
+        if (!$settings->getBool('enabled', false) || error_reporting() === 0) {
             return false;
         }
 
@@ -372,7 +373,7 @@ class ErrorLogger
             'url'  => $_SERVER['REQUEST_URI'],
         ];
 
-        if ($settings->getBool('backtrace')) {
+        if ($settings->getBool('backtrace', false)) {
             $debug = debug_backtrace();
             $dbg   = [];
             unset($debug[0]);

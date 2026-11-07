@@ -17,9 +17,9 @@ if (isset($this) && is_object($this) && method_exists($this, 'registerModule') &
         'ErrorLogger',
         'Error logger for Dotclear2',
         'Bruno Hondelatte',
-        '8.0',
+        '8.1',
         [
-            'date'        => '2026-08-03T09:55:07+0200',
+            'date'        => '2026-11-07T16:48:43+0100',
             'type'        => 'plugin',
             'requires'    => [['core', '2.39']],
             'permissions' => 'My',
